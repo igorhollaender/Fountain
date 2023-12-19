@@ -20,7 +20,7 @@ from adafruit_httpserver import Request, Response
 
 from FountainHTTPServer import FountainHTTPServer
 from  FountainShowScheduler import FountainShowScheduler
-from boardResources import boardLED
+from boardResources import boardLED, FountainDevice
 
  
 #  ipv4    =  ipaddress.IPv4Address("192.168.0.110")     #IH231211 "192.168.0.110" works in BA
@@ -29,6 +29,8 @@ ipv4    =  ipaddress.IPv4Address("192.168.0.195")     #IH231219 "192.168.0.195" 
 netmask =  ipaddress.IPv4Address("255.255.255.0")     #IH231211 works in BA, W
 gateway =  ipaddress.IPv4Address("192.168.0.1")       #IH231211 works in BA, W
 
+
+fountainDevice = FountainDevice(simulated=True)
        
 fountainHTTPServer = FountainHTTPServer(
         os.getenv('CIRCUITPY_WIFI_SSID'),
@@ -49,7 +51,7 @@ while True:
     try:
         fountainHTTPServer.poll()
         fountainShowScheduler.runNonblocking()
-        time.sleep(1)
+        time.sleep(0.01)
     except Exception as e:
         print(e)
         continue
