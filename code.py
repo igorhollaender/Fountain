@@ -18,8 +18,8 @@ import time
 from adafruit_httpserver import Request, Response
 
 
-from fountainHTTPServer import FountainHTTPServer
-import fountainShowScheduler
+from FountainHTTPServer import FountainHTTPServer
+from  FountainShowScheduler import FountainShowScheduler
 from boardResources import boardLED
 
  
@@ -38,12 +38,17 @@ fountainHTTPServer = FountainHTTPServer(
         gateway,
         debug=True)
 
+fountainShowScheduler  = FountainShowScheduler(
+        FountainShowScheduler.TestSchedule(),
+        debug=True)
+
 
 clock = time.monotonic()
 fountainHTTPServer.Start()
 while True:
     try:
         fountainHTTPServer.poll()
+        fountainShowScheduler.runNonblocking()
         time.sleep(1)
     except Exception as e:
         print(e)

@@ -183,14 +183,14 @@ class scheduler:
             #         pop(q)
             if not q:
                  break
-                 (time, priority, sequence, action,
-                    argument, kwargs) = q[0]
-                 now = timefunc()
-                 if time > now:
-                     delay = True
-                 else:
-                     delay = False
-                     pop(q)
+            (time, priority, sequence, action,
+              argument, kwargs) = q[0]
+            now = timefunc()
+            if time > now:
+                delay = True
+            else:
+                delay = False
+                pop(q)
             if delay:
                 if not blocking:
                     return time - now
