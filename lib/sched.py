@@ -1,3 +1,12 @@
+#
+#    s c h e d  . p y 
+#
+#    Last revision: IH231219
+#
+#    Adaptation of the sched.py
+
+# original header
+
 """A generally useful event scheduler class.
 
 Each instance of this class manages its own queue.
@@ -21,30 +30,34 @@ sequence in "argument" (remember that in Python, multiple function
 arguments are be packed in a sequence) and keyword parameters in "kwargs".
 The action function may be an instance method so it
 has another way to reference private data (besides global variables).
+
+
 """
+
+
 
 import time
 import heapq
 from collections import namedtuple
-from itertools import count
-import threading
+# from itertools import count       # IH231219 count replaced by trivial counting
+# import threading                  # IH231219 threading support completely abandoned
 from time import monotonic as _time
 
 __all__ = ["scheduler"]
 
 Event = namedtuple('Event', 'time, priority, sequence, action, argument, kwargs')
-Event.time.__doc__ = ('''Numeric type compatible with the return value of the
-timefunc function passed to the constructor.''')
-Event.priority.__doc__ = ('''Events scheduled for the same time will be executed
-in the order of their priority.''')
-Event.sequence.__doc__ = ('''A continually increasing sequence number that
-    separates events if time and priority are equal.''')
-Event.action.__doc__ = ('''Executing the event means executing
-action(*argument, **kwargs)''')
-Event.argument.__doc__ = ('''argument is a sequence holding the positional
-arguments for the action.''')
-Event.kwargs.__doc__ = ('''kwargs is a dictionary holding the keyword
-arguments for the action.''')
+# Event.time.__doc__ = ('''Numeric type compatible with the return value of the
+# timefunc function passed to the constructor.''')
+# Event.priority.__doc__ = ('''Events scheduled for the same time will be executed
+# in the order of their priority.''')
+# Event.sequence.__doc__ = ('''A continually increasing sequence number that
+#     separates events if time and priority are equal.''')
+# Event.action.__doc__ = ('''Executing the event means executing
+# action(*argument, **kwargs)''')
+# Event.argument.__doc__ = ('''argument is a sequence holding the positional
+# arguments for the action.''')
+# Event.kwargs.__doc__ = ('''kwargs is a dictionary holding the keyword
+# arguments for the action.''')
 
 _sentinel = object()
 
@@ -54,10 +67,16 @@ class scheduler:
         """Initialize a new instance, passing the time and delay
         functions"""
         self._queue = []
-        self._lock = threading.RLock()
+
+        # IH231219 abandoning threading
+        # self._lock = threading.RLock()
+        
         self.timefunc = timefunc
         self.delayfunc = delayfunc
-        self._sequence_generator = count()
+
+        # IH231219 primitive replacing itertools
+        # self._sequence_generator = count()
+        self._sequence_counter = 0
 
     def enterabs(self, time, priority, action, argument=(), kwargs=_sentinel):
         """Enter a new event in the queue at an absolute time.
@@ -69,10 +88,19 @@ class scheduler:
         if kwargs is _sentinel:
             kwargs = {}
 
-        with self._lock:
-            event = Event(time, priority, next(self._sequence_generator),
-                          action, argument, kwargs)
-            heapq.heappush(self._queue, event)
+        # IH231219 replacing itertools
+        # IH231219 abandoning threading
+            
+        # with self._lock:
+        #    event = Event(time, priority, next(self._sequence_generator),
+        #                  action, argument, kwargs)
+        #    heapq.heappush(self._queue, event)
+            
+        event = Event(time, priority, self._sequence_counter,
+                            action, argument, kwargs)
+        self._sequence_counter+=1
+        heapq.heappush(self._queue, event)
+            
         return event # The ID
 
     def enter(self, delay, priority, action, argument=(), kwargs=_sentinel):
@@ -91,14 +119,21 @@ class scheduler:
         If the event is not in the queue, this raises ValueError.
 
         """
-        with self._lock:
-            self._queue.remove(event)
-            heapq.heapify(self._queue)
+        # IH231219 abandoning threading
+        # with self._lock:
+        #    self._queue.remove(event)
+        #    heapq.heapify(self._queue)
+
+        self._queue.remove(event)
+        heapq.heapify(self._queue)
 
     def empty(self):
         """Check whether the queue is empty."""
-        with self._lock:
-            return not self._queue
+
+        # IH231219 abandoning threading
+        # with self._lock:
+        #     return not self._queue
+        return not self._queue
 
     def run(self, blocking=True):
         """Execute events until the queue is empty.
@@ -126,30 +161,45 @@ class scheduler:
         """
         # localize variable access to minimize overhead
         # and to improve thread safety
-        lock = self._lock
+
+        # IH231219 abandoning threading
+        # lock = self._lock
         q = self._queue
         delayfunc = self.delayfunc
         timefunc = self.timefunc
         pop = heapq.heappop
         while True:
-            with lock:
-                if not q:
-                    break
-                (time, priority, sequence, action,
-                 argument, kwargs) = q[0]
-                now = timefunc()
-                if time > now:
-                    delay = True
-                else:
-                    delay = False
-                    pop(q)
+            # IH231219 abandoning threading
+            # with lock:
+            #     if not q:
+            #         break
+            #     (time, priority, sequence, action,
+            #      argument, kwargs) = q[0]
+            #     now = timefunc()
+            #     if time > now:
+            #         delay = True
+            #     else:
+            #         delay = False
+            #         pop(q)
+            if not q:
+                 break
+                 (time, priority, sequence, action,
+                    argument, kwargs) = q[0]
+                 now = timefunc()
+                 if time > now:
+                     delay = True
+                 else:
+                     delay = False
+                     pop(q)
             if delay:
                 if not blocking:
                     return time - now
                 delayfunc(time - now)
             else:
                 action(*argument, **kwargs)
-                delayfunc(0)   # Let other threads run
+
+                # IH231219 abandoning threading
+                # delayfunc(0)   # Let other threads run
 
     @property
     def queue(self):
@@ -162,6 +212,10 @@ class scheduler:
         # Use heapq to sort the queue rather than using 'sorted(self._queue)'.
         # With heapq, two events scheduled at the same time will show in
         # the actual order they would be retrieved.
-        with self._lock:
-            events = self._queue[:]
+        
+        # IH231219 abandoning threading
+        # with self._lock:
+        #     events = self._queue[:]
+        events = self._queue[:]
+
         return list(map(heapq.heappop, [events]*len(events)))

@@ -4,7 +4,7 @@
 #
 #    The Fountain project
 #    
-#     Last revision: IH231211
+#     Last revision: IH231219
 #
 #
 
@@ -23,9 +23,11 @@ import fountainShowScheduler
 from boardResources import boardLED
 
  
-ipv4    =  ipaddress.IPv4Address("192.168.0.110")     #IH231211 "192.168.0.110" works in BA
-netmask =  ipaddress.IPv4Address("255.255.255.0")     #IH231211 not sure
-gateway =  ipaddress.IPv4Address("192.168.0.1")       #IH231211 not sure
+#  ipv4    =  ipaddress.IPv4Address("192.168.0.110")     #IH231211 "192.168.0.110" works in BA
+ipv4    =  ipaddress.IPv4Address("192.168.0.195")     #IH231219 "192.168.0.195" works in W
+
+netmask =  ipaddress.IPv4Address("255.255.255.0")     #IH231211 works in BA, W
+gateway =  ipaddress.IPv4Address("192.168.0.1")       #IH231211 works in BA, W
 
        
 fountainHTTPServer = FountainHTTPServer(
