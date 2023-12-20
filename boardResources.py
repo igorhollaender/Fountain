@@ -8,16 +8,13 @@
 import board
 from digitalio import DigitalInOut, Direction
 
-# globals
-
-fountainSimulated = True
-
 # --- general Adafruit board resources
 
 #  onboard LED
 boardLED = DigitalInOut(board.LED)
 boardLED.direction = Direction.OUTPUT
 boardLED.value = False
+
 
 # --- Fountain specific resources
 
@@ -33,12 +30,14 @@ class FountainDevice():
     LED2    = 4
 
     def __init__(self) -> None:
+        # print (fountainSimulated)
         pass
-
+        
     
     # hardware control methods
     
     def pwm_setStatic(device=0, pwm_percentage=100):
+        global fountainSimulated
         #IH231219 TODO
         if fountainSimulated:
             print(f"Device {device}: pwm set to {pwm_percentage} percent")

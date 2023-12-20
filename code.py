@@ -23,6 +23,11 @@ from  FountainShowScheduler import FountainShowScheduler
 from boardResources import boardLED, FountainDevice
 
  
+# globals
+
+fountainSimulated = True
+
+
 #  ipv4    =  ipaddress.IPv4Address("192.168.0.110")     #IH231211 "192.168.0.110" works in BA
 #  ipv4    =  ipaddress.IPv4Address("192.168.0.195")     #IH231219 "192.168.0.195" works in W
 ipv4    =  ipaddress.IPv4Address("192.168.1.30")     #IH231219 "192.168.1.30" works in BV
@@ -46,13 +51,14 @@ fountainShowScheduler  = FountainShowScheduler(
         debug=True)
 
 
+
 clock = time.monotonic()
 fountainHTTPServer.Start()
 while True:
     try:
         fountainHTTPServer.poll()
-        fountainShowScheduler.runNonblocking()
-        time.sleep(0.01)
+        # fountainShowScheduler.runNonblocking()
+        time.sleep(1)
     except Exception as e:
         print(e)
         continue

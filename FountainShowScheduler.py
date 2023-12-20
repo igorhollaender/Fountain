@@ -11,7 +11,7 @@ from collections import namedtuple
 from boardResources import FountainDevice
 
 
-ScheduledDeviceAction = namedtuple('ScheduledDeviceAction', 'time, device, action, kwargs')
+ScheduledDeviceAction = namedtuple('ScheduledDeviceAction', 'time device action kwargs')
 
 class FountainShowScheduler():
 
@@ -25,29 +25,29 @@ class FountainShowScheduler():
         self.scheduler = sched.scheduler(timefunc=time)
 
         self.setSchedule(showSchedule)
+        print(f"FOUNTAIN--> Actual queue: {self.scheduler.queue}")
 
     def setSchedule(self,schedule):
         self.cleanSchedule()
-        map(self.createSchedEvent,schedule)
+        for deviceAction in schedule:
+            print(deviceAction)
+            self.scheduler.enterabs(
+                deviceAction.time,
+                deviceAction.device,  #the device ID number defines priority
+                deviceAction.action,
+                kwargs=deviceAction.kwargs)
 
-    def createSchedEvent(self,deviceAction):
-        self.scheduler.enterabs(
-            deviceAction.time,
-            deviceAction.device,  #the device iD nmumber defines priority
-            deviceAction.action,
-            kwargs=deviceAction.kwargs)
 
     def cleanSchedule(self):
         pass
 
     def runNonblocking(self):
-        self.scheduler.run(blocking=False)
-        pass
+        self.scheduler.run(blocking=False)  
 
     @staticmethod
     def TestSchedule():
         schedule = [
             ScheduledDeviceAction(0.0,FountainDevice.PUMP1,FountainDevice.pwm_setStatic,kwargs={'device':FountainDevice.PUMP1, 'pwm_percentage': 100}),
-            ScheduledDeviceAction(1.0,FountainDevice.PUMP1,FountainDevice.pwm_setStatic,kwargs={'device':FountainDevice.PUMP1, 'pwm_percentage': 0}),
+            ScheduledDeviceAction(5.0,FountainDevice.PUMP1,FountainDevice.pwm_setStatic,kwargs={'device':FountainDevice.PUMP1, 'pwm_percentage': 0}),
         ]
         return schedule
