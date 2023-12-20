@@ -8,6 +8,9 @@
 import board
 from digitalio import DigitalInOut, Direction
 
+# globals
+
+fountainSimulated = True
 
 # --- general Adafruit board resources
 
@@ -19,24 +22,25 @@ boardLED.value = False
 # --- Fountain specific resources
 
 #IH231219 CircuitPython does not have an enum class
-class FountainDevice(simulated=False):
-    
-    def __init__(self) -> None:
-        self.simulated = simulated
+class FountainDevice():
 
-        # the ID number of the device also specifies its priority when scheduling actions
-        # device with ID 0 is reserved
-        self.PUMP1   = 1
-        self.PUMP2   = 2
-        self.LED1    = 3
-        self.LED2    = 4
+    # the ID number of the device also specifies its priority when scheduling actions
+    # device with ID 0 is reserved
+
+    PUMP1   = 1
+    PUMP2   = 2
+    LED1    = 3
+    LED2    = 4
+
+    def __init__(self) -> None:
+        pass
 
     
     # hardware control methods
     
     def pwm_setStatic(device=0, pwm_percentage=100):
         #IH231219 TODO
-        if self.simulated:
+        if fountainSimulated:
             print(f"Device {device}: pwm set to {pwm_percentage} percent")
             return
         pass

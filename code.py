@@ -4,7 +4,7 @@
 #
 #    The Fountain project
 #    
-#     Last revision: IH231219
+#     Last revision: IH231220
 #
 #
 
@@ -24,13 +24,14 @@ from boardResources import boardLED, FountainDevice
 
  
 #  ipv4    =  ipaddress.IPv4Address("192.168.0.110")     #IH231211 "192.168.0.110" works in BA
-ipv4    =  ipaddress.IPv4Address("192.168.0.195")     #IH231219 "192.168.0.195" works in W
+#  ipv4    =  ipaddress.IPv4Address("192.168.0.195")     #IH231219 "192.168.0.195" works in W
+ipv4    =  ipaddress.IPv4Address("192.168.1.30")     #IH231219 "192.168.1.30" works in BV
 
 netmask =  ipaddress.IPv4Address("255.255.255.0")     #IH231211 works in BA, W
 gateway =  ipaddress.IPv4Address("192.168.0.1")       #IH231211 works in BA, W
 
 
-fountainDevice = FountainDevice(simulated=True)
+fountainDevice = FountainDevice()
        
 fountainHTTPServer = FountainHTTPServer(
         os.getenv('CIRCUITPY_WIFI_SSID'),

@@ -1,7 +1,7 @@
 #
 #    f o u n t a i n   S h o w   S c h e d u l e r . p y 
 #
-#    Last revision: IH231219
+#    Last revision: IH231220
 #
 
 import sched
@@ -13,17 +13,15 @@ from boardResources import FountainDevice
 
 ScheduledDeviceAction = namedtuple('ScheduledDeviceAction', 'time, device, action, kwargs')
 
-class FountainShowScheduler(simulated = True):
+class FountainShowScheduler():
 
     def __init__(
                 self, 
                 showSchedule,
-                simulated,
                 debug=True) -> None:
 
         self.showSchedule = showSchedule
         self.debug = debug
-        self.simulated = simulated
         self.scheduler = sched.scheduler(timefunc=time)
 
         self.setSchedule(showSchedule)
