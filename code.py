@@ -4,7 +4,7 @@
 #
 #    The Fountain project
 #    
-#     Last revision: IH231220
+#     Last revision: IH240104
 #
 #
 
@@ -29,8 +29,8 @@ fountainSimulated = True
 
 
 #  ipv4    =  ipaddress.IPv4Address("192.168.0.110")     #IH231211 "192.168.0.110" works in BA
-#  ipv4    =  ipaddress.IPv4Address("192.168.0.195")     #IH231219 "192.168.0.195" works in W
-ipv4    =  ipaddress.IPv4Address("192.168.1.30")     #IH231219 "192.168.1.30" works in BV
+ipv4    =  ipaddress.IPv4Address("192.168.0.195")     #IH231219 "192.168.0.195" works in W
+#  ipv4    =  ipaddress.IPv4Address("192.168.1.30")     #IH231219 "192.168.1.30" works in BV
 
 netmask =  ipaddress.IPv4Address("255.255.255.0")     #IH231211 works in BA, W
 gateway =  ipaddress.IPv4Address("192.168.0.1")       #IH231211 works in BA, W
