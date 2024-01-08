@@ -19,10 +19,10 @@ from adafruit_httpserver import Request, Response
 
 from FountainHTTPServer import FountainHTTPServer
 from  FountainShowScheduler import FountainShowScheduler
-from boardResources import boardLED, FountainDevice
+from boardResources import boardLED, FountainDevice, fountainSimulated
 
 
-# print (boardResources.fountainSimulated)
+print (fountainSimulated)
 
 
 

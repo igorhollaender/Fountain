@@ -49,7 +49,10 @@ class FountainShowScheduler():
     @staticmethod
     def TestSchedule():
         schedule = [
-            ScheduledDeviceAction(1.0,FountainDevice.PUMP1,FountainDevice.pwm_setStatic,kwargs={'pwm_percentage': 100}),
-            ScheduledDeviceAction(3.0,FountainDevice.PUMP1,FountainDevice.pwm_setStatic,kwargs={'pwm_percentage': 0}),
+            ScheduledDeviceAction(1.0,FountainDevice.PUMP1,FountainDevice.pwm_setStatic,kwargs={'pwm_percentage': 0}),
+            ScheduledDeviceAction(3.0,FountainDevice.PUMP1,FountainDevice.pwm_setStatic,kwargs={'pwm_percentage': 100}),
+            ScheduledDeviceAction(5.0,FountainDevice.PUMP1,FountainDevice.pwm_setStatic,kwargs={'pwm_percentage': 0}),
+            ScheduledDeviceAction(7.0,FountainDevice.PUMP1,FountainDevice.pwm_setStatic,kwargs={'pwm_percentage': 100}),
+            ScheduledDeviceAction(9.0,FountainDevice.PUMP1,FountainDevice.pwm_setStatic,kwargs={'pwm_percentage': 0}),
         ]
         return schedule
