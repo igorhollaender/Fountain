@@ -4,10 +4,9 @@
 #
 #    The Fountain project
 #    
-#     Last revision: IH240104
+#     Last revision: IH240108
 #
 #
-
 
 
 
@@ -22,10 +21,9 @@ from FountainHTTPServer import FountainHTTPServer
 from  FountainShowScheduler import FountainShowScheduler
 from boardResources import boardLED, FountainDevice
 
- 
-# globals
 
-fountainSimulated = True
+# print (boardResources.fountainSimulated)
+
 
 
 #  ipv4    =  ipaddress.IPv4Address("192.168.0.110")     #IH231211 "192.168.0.110" works in BA
@@ -48,17 +46,18 @@ fountainHTTPServer = FountainHTTPServer(
 
 fountainShowScheduler  = FountainShowScheduler(
         FountainShowScheduler.TestSchedule(),
+        startDelayMilliSeconds=1000,
         debug=True)
 
 
 
-clock = time.monotonic()
 fountainHTTPServer.Start()
 while True:
     try:
         fountainHTTPServer.poll()
-        # fountainShowScheduler.runNonblocking()
+        fountainShowScheduler.runNonblocking()
         time.sleep(1)
+
     except Exception as e:
         print(e)
         continue

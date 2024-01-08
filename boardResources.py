@@ -1,12 +1,16 @@
 #
 #    b o a r d    R e s o u r c e s  . p y 
 #
-#    Last revision: IH231219
+#    Last revision: IH240108
 #
 #
 
 import board
 from digitalio import DigitalInOut, Direction
+
+# --- simulation
+
+fountainSimulated = True
 
 # --- general Adafruit board resources
 
@@ -14,6 +18,7 @@ from digitalio import DigitalInOut, Direction
 boardLED = DigitalInOut(board.LED)
 boardLED.direction = Direction.OUTPUT
 boardLED.value = False
+
 
 
 # --- Fountain specific resources

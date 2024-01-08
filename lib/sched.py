@@ -110,6 +110,8 @@ class scheduler:
         This is actually the more commonly used interface.
 
         """
+        print ("I am here C")
+        print (f'self.timefunc()={self.timefunc()}, delay is {delay}')
         time = self.timefunc() + delay
         return self.enterabs(time, priority, action, argument, kwargs)
 
@@ -187,6 +189,7 @@ class scheduler:
             (time, priority, sequence, action,
               argument, kwargs) = q[0]
             now = timefunc()
+            print (f'now is {now}, time is {time}')
             if time > now:
                 delay = True
             else:
