@@ -187,7 +187,7 @@ class scheduler:
             (time, priority, sequence, action,
               argument, kwargs) = q[0]
             now = timefunc()
-            print (f'now is {now}, next event is scheduled at  {time}')
+            # print (f'now is {now:2f}, next event is scheduled at  {time}')
             if time > now:
                 delay = True
             else:

@@ -46,6 +46,7 @@ fountainHTTPServer.Start()
 
 
 def runShow(showSchedule=FountainShowScheduler.TestSchedule()):
+        print (f'SHOW started at T+{timeToHMS(time.time()-timeAtStart)}')
         fountainShowScheduler  = FountainShowScheduler(
                 showSchedule,
                 startDelayMilliSeconds=1000,
@@ -54,15 +55,24 @@ def runShow(showSchedule=FountainShowScheduler.TestSchedule()):
                 fountainHTTPServer.poll()
                 fountainShowScheduler.runNonblocking()
                 time.sleep(timeResolutionMilliseconds/1000*2)  #IH240108 heuristic 
-             
+        print (f'SHOW finished at T+{timeToHMS(time.time()-timeAtStart)}')
 
+def timeToHMS(timeSeconds):
+        # see https://www.geeksforgeeks.org/python-program-to-convert-seconds-into-hours-minutes-and-seconds/
+        min,sec = divmod(timeSeconds,60)
+        hour,min = divmod(min,60)
+        return '%d:%02d:%02d' % (hour,min,sec)
+
+timeAtStart = time.time()
 while True:
     try:
         fountainHTTPServer.poll()
         fountainGlobalScheduler.run(blocking=False)
         if fountainGlobalScheduler.empty():
                 # schedule next Show
-                fountainGlobalScheduler.enterabs(time.time()+10,1,runShow)  # IH240108 TODO: add arguments for runShow
+                nextScheduledTime = time.time() + 10
+                print(f'fountainGlobalScheduler: next show scheduled to T+{timeToHMS(nextScheduledTime-timeAtStart)}')
+                fountainGlobalScheduler.enterabs(nextScheduledTime,1,runShow,kwargs={'showSchedule':FountainShowScheduler.TestSchedule()})
 
         time.sleep(timeResolutionMilliseconds/1000*2)  #IH240108 heuristic
      

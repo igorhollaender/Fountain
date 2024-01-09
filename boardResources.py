@@ -50,13 +50,16 @@ class FountainDevice():
         #IH231219 TODO
         if fountainSimulated:
             print(f"Device {device}: pwm set to {pwm_percentage} percent")
+            boardLED.value = (pwm_percentage>50)
             return
+        else:
+            pass
         pass
 
     def pwm_setLinearRamp(device=0, pwm_percentage_begin=0, pwm_percentage_end=100, totalDuration=1, numberOfSteps=10):
         """
         Use to schedule pwm setup steps for linear ramp.
-        totalDuration    is gievn in general time units
+        totalDuration    is given in general time units
         numberOfSteps    includes the beginning and end steps
         """
         #IH231219 TODO  

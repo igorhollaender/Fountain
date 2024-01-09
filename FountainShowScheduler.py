@@ -28,7 +28,7 @@ class FountainShowScheduler():
 
         self.setSchedule(self.showSchedule)
 
-        print(f"FOUNTAIN--> Actual queue: {self.scheduler.queue}")
+        # print(f"FOUNTAIN--> Actual queue: {self.scheduler.queue}")
 
     def setSchedule(self,schedule):
         self.cleanSchedule()
@@ -57,6 +57,6 @@ class FountainShowScheduler():
             ScheduledDeviceAction(3.0,FountainDevice.PUMP1,FountainDevice.pwm_setStatic,kwargs={'pwm_percentage': 100}),
             ScheduledDeviceAction(5.0,FountainDevice.PUMP1,FountainDevice.pwm_setStatic,kwargs={'pwm_percentage': 0}),
             ScheduledDeviceAction(7.0,FountainDevice.PUMP1,FountainDevice.pwm_setStatic,kwargs={'pwm_percentage': 100}),
-            ScheduledDeviceAction(9.0,FountainDevice.PUMP1,FountainDevice.pwm_setStatic,kwargs={'pwm_percentage': 0}),
+            ScheduledDeviceAction(8.0,FountainDevice.PUMP1,FountainDevice.pwm_setStatic,kwargs={'pwm_percentage': 0}),
         ]
         return schedule
