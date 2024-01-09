@@ -12,6 +12,10 @@ from digitalio import DigitalInOut, Direction
 
 fountainSimulated = True
 
+# --- diverse
+
+timeResolutionMilliseconds = 50
+
 # --- general Adafruit board resources
 
 #  onboard LED

@@ -41,7 +41,11 @@ class FountainShowScheduler():
 
 
     def cleanSchedule(self):
+        #IH240108 TODO
         pass
+
+    def empty(self):
+        return self.scheduler.empty()
 
     def runNonblocking(self):
         self.scheduler.run(blocking=False)  
