@@ -4,7 +4,7 @@
 #
 #    The Fountain project
 #    
-#     Last revision: IH240108
+#     Last revision: IH240111
 #
 #
 
@@ -14,6 +14,7 @@ import ipaddress
 import os
 import sched
 import time
+import adafruit_ntp
 from adafruit_httpserver import Request, Response
 
 
@@ -72,6 +73,7 @@ while True:
                 # schedule next Show
                 nextScheduledTime = time.time() + 10
                 print(f'fountainGlobalScheduler: next show scheduled to T+{timeToHMS(nextScheduledTime-timeAtStart)}')
+                # print(f'current NTP time is {fountainHTTPServer.getNTPdatetime()}') #IH240111 does not work
                 fountainGlobalScheduler.enterabs(nextScheduledTime,1,runShow,kwargs={'showSchedule':FountainShowScheduler.TestSchedule()})
 
         time.sleep(timeResolutionMilliseconds/1000*2)  #IH240108 heuristic

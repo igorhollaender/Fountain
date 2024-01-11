@@ -1,7 +1,7 @@
 #
 #    f o u n t a i n   H T T P   S e r v e r . p y 
 #
-#    Last revision: IH231218
+#    Last revision: IH240111
 #
 #
 #    based on 
@@ -16,6 +16,7 @@ import os
 import socketpool
 import time
 import wifi
+import adafruit_ntp
 
 from adafruit_httpserver import Server, Request, Response, Route, GET, POST
 from boardResources import boardLED
@@ -59,6 +60,8 @@ class FountainHTTPServer():
         pool = socketpool.SocketPool(wifi.radio)
         self.server = Server(pool, "/static", debug=self.debug)
      
+        # IH240111 HACK the NTP included
+        self.ntp = adafruit_ntp.NTP(pool)
         
         # add routes
         self.server.add_routes([
@@ -82,6 +85,10 @@ class FountainHTTPServer():
     def poll(self):
         self.server.poll()
 
+
+    def getNTPdatetime(self):
+        return self.ntp.datetime() #IH240111 PROBLEM this does not work (-2,"Name or service not known")
+    
     #  route request processing functions
 
     @staticmethod
@@ -100,6 +107,9 @@ class FountainHTTPServer():
             boardLED.value = True
         #  if the led off button was pressed
         if "OFF" in raw_text:
+            boardLED.value = False
+        #  reload site
+        if "STOPSHOW" in raw_text:
             boardLED.value = False
         #  reload site
         return Response(request, f"{FountainHTTPServer.Webpage()}", content_type='text/html')
@@ -130,13 +140,13 @@ class FountainHTTPServer():
         <title>Fountain HTTP Server</title>
         <h1>Fountain HTTP Server</h1>
         <br>
-        <p class="dotted">This is an HTTP server with CircuitPython.</p>
-        <br>
-        <h1>Control the LED on the ESP board with these buttons:</h1><br>
         <form accept-charset="utf-8" method="POST">
         <button class="button" name="LED ON" value="ON" type="submit">LED ON</button></a></p></form>
         <p><form accept-charset="utf-8" method="POST">
         <button class="button" name="LED OFF" value="OFF" type="submit">LED OFF</button></a></p></form>
+
+        <p><form accept-charset="utf-8" method="POST">
+        <button class="button" name="SHOW STOP" value="SHOWSTOP" type="submit">SHOW STOP</button></a></p></form>
         </body></html>
         """
         return html
