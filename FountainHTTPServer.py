@@ -1,7 +1,7 @@
 #
 #    f o u n t a i n   H T T P   S e r v e r . p y 
 #
-#    Last revision: IH240111
+#    Last revision: IH240112
 #
 #
 #    based on 
@@ -21,8 +21,20 @@ import adafruit_ntp
 from adafruit_httpserver import Server, Request, Response, Route, GET, POST
 from boardResources import boardLED
 
+
+
 class FountainHTTPServer():
 
+    # Commands from web client
+    START_SHOW      = 1
+    STOP_SHOW       = 2
+    START_LOOP      = 3
+    STOP_LOOP       = 4
+    
+    #IH2410112 class variables  (for singleton only)
+    commandFromWebClient = None
+    kwargsFromWebClient = {}
+    
     def __init__(
                 self, 
                 wifi_ssid, 
@@ -40,10 +52,11 @@ class FountainHTTPServer():
 
         self.debug = debug
         self.server = None
-        
+
+            
 
     def Start(self):
-    
+        
         #  connect to network
         print()
         print("Connecting to WiFi")
@@ -101,16 +114,17 @@ class FountainHTTPServer():
     def buttonpress(request: Request):
         #  get the raw text
         raw_text = request.raw_request.decode("utf8")
-        print(raw_text)
+        # print(f'raw_text is "{raw_text}"')
         #  if the led on button was pressed
         if "ON" in raw_text:
             boardLED.value = True
         #  if the led off button was pressed
         if "OFF" in raw_text:
             boardLED.value = False
-        #  reload site
+        #  stop current show (but continue loop)
         if "STOPSHOW" in raw_text:
-            boardLED.value = False
+            FountainHTTPServer.commandFromWebClient = FountainHTTPServer.STOP_SHOW
+            FountainHTTPServer.kwargsFromWebClient = {}
         #  reload site
         return Response(request, f"{FountainHTTPServer.Webpage()}", content_type='text/html')
 
@@ -146,7 +160,7 @@ class FountainHTTPServer():
         <button class="button" name="LED OFF" value="OFF" type="submit">LED OFF</button></a></p></form>
 
         <p><form accept-charset="utf-8" method="POST">
-        <button class="button" name="SHOW STOP" value="SHOWSTOP" type="submit">SHOW STOP</button></a></p></form>
+        <button class="button" name="BUTTON_STOPSHOW" value="STOPSHOW" type="submit">STOP SHOW</button></a></p></form>
         </body></html>
         """
         return html

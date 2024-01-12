@@ -4,7 +4,7 @@
 #
 #    The Fountain project
 #    
-#     Last revision: IH240111
+#     Last revision: IH240112
 #
 #
 
@@ -24,9 +24,9 @@ from boardResources import boardLED, FountainDevice, fountainSimulated, timeReso
 
 
 
-ipv4    =  ipaddress.IPv4Address("192.168.0.110")     #IH231211 "192.168.0.110" works in BA
+# ipv4    =  ipaddress.IPv4Address("192.168.0.110")     #IH231211 "192.168.0.110" works in BA
 # ipv4    =  ipaddress.IPv4Address("192.168.0.195")     #IH231219 "192.168.0.195" works in W
-#  ipv4    =  ipaddress.IPv4Address("192.168.1.30")     #IH231219 "192.168.1.30" works in BV
+ipv4    =  ipaddress.IPv4Address("192.168.1.30")     #IH231219 "192.168.1.30" works in BV
 
 netmask =  ipaddress.IPv4Address("255.255.255.0")     #IH231211 works in BA, W
 gateway =  ipaddress.IPv4Address("192.168.0.1")       #IH231211 works in BA, W
@@ -54,6 +54,11 @@ def runShow(showSchedule=FountainShowScheduler.TestSchedule()):
                 debug=True)
         while not fountainShowScheduler.empty():
                 fountainHTTPServer.poll()
+                if FountainHTTPServer.commandFromWebClient is not None:
+                      if FountainHTTPServer.commandFromWebClient==FountainHTTPServer.STOP_SHOW:
+                                fountainShowScheduler.cleanSchedule()
+                                FountainHTTPServer.commandFromWebClient = None            
+
                 fountainShowScheduler.runNonblocking()
                 time.sleep(timeResolutionMilliseconds/1000*2)  #IH240108 heuristic 
         print (f'SHOW finished at T+{timeToHMS(time.time()-timeAtStart)}')
