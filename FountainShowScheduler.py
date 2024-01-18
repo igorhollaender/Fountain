@@ -1,7 +1,7 @@
 #
 #    f o u n t a i n   S h o w   S c h e d u l e r . p y 
 #
-#    Last revision: IH240112
+#    Last revision: IH240118
 #
 
 import sched
@@ -63,9 +63,11 @@ class FountainShowScheduler():
     @staticmethod
     def TestSchedule():
         schedule = [
-            # device action with time<0 is used to cleanup after premature sequence finish
+            # device actions with time<0 are used to cleanup after premature sequence finish
+            # (the cleanup actions are executed in ascending order, i.e. -3, then -2, then -1. )
             ScheduledDeviceAction(-1,FountainDevice.PUMP1,FountainDevice.pwm_setStatic,kwargs={'pwm_percentage': 0}),
             
+            # device action with time=0 is used to initialize the devices
 
             ScheduledDeviceAction(1.0,FountainDevice.PUMP1,FountainDevice.pwm_setStatic,kwargs={'pwm_percentage': 0}),
             ScheduledDeviceAction(3.0,FountainDevice.PUMP1,FountainDevice.pwm_setStatic,kwargs={'pwm_percentage': 100}),

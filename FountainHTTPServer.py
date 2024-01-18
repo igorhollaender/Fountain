@@ -26,10 +26,10 @@ from boardResources import boardLED
 class FountainHTTPServer():
 
     # Commands from web client
-    START_SHOW      = 1
-    STOP_SHOW       = 2
-    START_LOOP      = 3
-    STOP_LOOP       = 4
+    SHOW_START      = 1
+    SHOW_STOP       = 2
+    LOOP_START      = 3
+    LOOP_STOP       = 4
     
     #IH2410112 class variables  (for singleton only)
     commandFromWebClient = None
@@ -122,8 +122,8 @@ class FountainHTTPServer():
         if "OFF" in raw_text:
             boardLED.value = False
         #  stop current show (but continue loop)
-        if "STOPSHOW" in raw_text:
-            FountainHTTPServer.commandFromWebClient = FountainHTTPServer.STOP_SHOW
+        if "SHOW_STOP" in raw_text:
+            FountainHTTPServer.commandFromWebClient = FountainHTTPServer.SHOW_STOP
             FountainHTTPServer.kwargsFromWebClient = {}
         #  reload site
         return Response(request, f"{FountainHTTPServer.Webpage()}", content_type='text/html')
@@ -153,14 +153,21 @@ class FountainHTTPServer():
         <body>
         <title>Fountain HTTP Server</title>
         <h1>Fountain HTTP Server</h1>
-        <br>
+        
+        
+        
         <form accept-charset="utf-8" method="POST">
-        <button class="button" name="LED ON" value="ON" type="submit">LED ON</button></a></p></form>
-        <p><form accept-charset="utf-8" method="POST">
-        <button class="button" name="LED OFF" value="OFF" type="submit">LED OFF</button></a></p></form>
-
-        <p><form accept-charset="utf-8" method="POST">
-        <button class="button" name="BUTTON_STOPSHOW" value="STOPSHOW" type="submit">STOP SHOW</button></a></p></form>
+        <p>
+        <button class="button" name="LED ON" value="ON" type="submit">LED ON</button>
+        <button class="button" name="LED OFF" value="OFF" type="submit">LED OFF</button>
+        </p>
+        <p>
+        <button class="button" name="BUTTON_SHOW_STOP" value="SHOW_STOP" type="submit">STOP SHOW</button>
+        <button class="button" name="BUTTON_LOOP_STOP" value="LOOP_STOP" type="submit">STOP LOOP</button>
+        <button class="button" name="BUTTON_LOOP_START" value="LOOP_START" type="submit">START LOOP</button>
+        </p>
+        </form>
+        
         </body></html>
         """
         return html

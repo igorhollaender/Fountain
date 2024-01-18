@@ -55,9 +55,11 @@ def runShow(showSchedule=FountainShowScheduler.TestSchedule()):
         while not fountainShowScheduler.empty():
                 fountainHTTPServer.poll()
                 if FountainHTTPServer.commandFromWebClient is not None:
-                      if FountainHTTPServer.commandFromWebClient==FountainHTTPServer.STOP_SHOW:
+                        if FountainHTTPServer.commandFromWebClient==FountainHTTPServer.SHOW_STOP:
                                 fountainShowScheduler.cleanSchedule()
-                                FountainHTTPServer.commandFromWebClient = None            
+                                FountainHTTPServer.commandFromWebClient = None  
+                        if FountainHTTPServer.commandFromWebClient==FountainHTTPServer.LOOP_STOP:
+                                fountainShowScheduler.cleanSchedule()          
 
                 fountainShowScheduler.runNonblocking()
                 time.sleep(timeResolutionMilliseconds/1000*2)  #IH240108 heuristic 
