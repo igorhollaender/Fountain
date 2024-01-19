@@ -114,7 +114,7 @@ class FountainHTTPServer():
     def buttonpress(request: Request):
         #  get the raw text
         raw_text = request.raw_request.decode("utf8")
-        # print(f'raw_text is "{raw_text}"')
+        print(f'raw_text is "{raw_text}"')
         #  if the led on button was pressed
         if "ON" in raw_text:
             boardLED.value = True
@@ -207,8 +207,14 @@ class FountainHTTPServer():
         <button class="button" name="BUTTON_LOOP_START" value="LOOP_START" type="submit">START LOOP</button>
         </p>
         </p>
+        </form>
+
+        <form accept-charset="utf-8" method="POST">
         <p>
-        <input class="textbox" name="TEXTBOX_SHOW_STOP" value="[]" type="submit"></input>
+        <input class="textbox" name="TEXTBOX_SHOW_SCHEDULE" value="abcdef" ></input>
+        </p>
+        <p>
+        <button class="button" name="SHOW_SUBMIT_SCHEDULE" value="SHOW_SUBMIT_SCHEDULE" type="submit">SUBMIT SHOW SCHEDULE</button>
         </p>
         </form>
         
