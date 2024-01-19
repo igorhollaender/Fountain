@@ -26,10 +26,11 @@ from boardResources import boardLED
 class FountainHTTPServer():
 
     # Commands from web client
-    SHOW_START      = 1
-    SHOW_STOP       = 2
-    LOOP_START      = 3
-    LOOP_STOP       = 4
+    SHOW_START              = 1
+    SHOW_STOP               = 2
+    SHOW_SUBMIT_SCHEDULE    = 3
+    LOOP_START              = 4
+    LOOP_STOP               = 5
     
     #IH2410112 class variables  (for singleton only)
     commandFromWebClient = None
