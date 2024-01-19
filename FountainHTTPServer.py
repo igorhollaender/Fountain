@@ -1,7 +1,7 @@
 #
 #    f o u n t a i n   H T T P   S e r v e r . p y 
 #
-#    Last revision: IH240112
+#    Last revision: IH240119
 #
 #
 #    based on 
@@ -137,23 +137,63 @@ class FountainHTTPServer():
         <head>
         <meta http-equiv="Content-type" content="text/html;charset=utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+
         <style>
-        html{{font-family: {font_family}; background-color: lightgrey;
-        display:inline-block; margin: 0px auto; text-align: center;}}
-        h1{{color: deeppink; width: 200; word-wrap: break-word; padding: 2vh; font-size: 35px;}}
-        p{{font-size: 1.5rem; width: 200; word-wrap: break-word;}}
-        .button{{font-family: {font_family};display: inline-block;
-        background-color: black; border: none;
-        border-radius: 4px; color: white; padding: 16px 40px;
-        text-decoration: none; font-size: 30px; margin: 2px; cursor: pointer;}}
-        p.dotted {{margin: auto;
-        width: 75%; font-size: 25px; text-align: center;}}
+        html {{
+            font-family: {font_family}; 
+            background-color: lightgrey;
+            display:inline-block; 
+            margin: 0px auto; 
+            text-align: center;
+            }}
+        
+        h1 {{
+            color: deeppink; 
+            width: 200; 
+            word-wrap: break-word; 
+            padding: 2vh; 
+            font-size: 35px
+            ;}}
+        
+        p {{
+            font-size: 1.5rem; 
+            width: 200; 
+            word-wrap: break-word;
+            }}
+        
+        .button {{
+            font-family: {font_family};^
+            display: inline-block;
+            background-color: black; 
+            border: none;
+            border-radius: 4px; 
+            color: white; 
+            padding: 16px 40px;
+            text-decoration: none; 
+            font-size: 30px; 
+            margin: 2px; 
+            cursor: pointer;
+            }}
+
+        .textbox {{
+            font-family: {font_family};
+            font-size: 1.0rem;
+            height:  200px;
+            width:  80%;
+            }}
+
+        p.dotted {{
+            margin: auto;
+            width: 75%; 
+            font-size: 25px; 
+            text-align: center;
+            }}
         </style>
         </head>
+
         <body>
         <title>Fountain HTTP Server</title>
         <h1>Fountain HTTP Server</h1>
-        
         
         
         <form accept-charset="utf-8" method="POST">
@@ -165,6 +205,10 @@ class FountainHTTPServer():
         <button class="button" name="BUTTON_SHOW_STOP" value="SHOW_STOP" type="submit">STOP SHOW</button>
         <button class="button" name="BUTTON_LOOP_STOP" value="LOOP_STOP" type="submit">STOP LOOP</button>
         <button class="button" name="BUTTON_LOOP_START" value="LOOP_START" type="submit">START LOOP</button>
+        </p>
+        </p>
+        <p>
+        <input class="textbox" name="TEXTBOX_SHOW_STOP" value="[]" type="submit"></input>
         </p>
         </form>
         
