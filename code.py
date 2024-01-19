@@ -60,7 +60,7 @@ def runShow(showSchedule=FountainShowScheduler.TestSchedule()):
                                 FountainHTTPServer.commandFromWebClient = None  
                         if FountainHTTPServer.commandFromWebClient in [FountainHTTPServer.LOOP_STOP, FountainHTTPServer.SHOW_SUBMIT_SCHEDULE]:
                                 fountainShowScheduler.cleanSchedule()          
-
+                # CONTINUE HERE
                 fountainShowScheduler.runNonblocking()
                 time.sleep(timeResolutionMilliseconds/1000*2)  #IH240108 heuristic 
         print (f'SHOW finished at T+{timeToHMS(time.time()-timeAtStart)}')
