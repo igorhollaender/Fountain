@@ -98,13 +98,6 @@ class FountainHTTPServer():
             print("restarting..")
             microcontroller.reset() 
 
-
-        # IH240122 for debugging only
-        https = adafruit_requests.Session(self.pool, ssl.create_default_context())
-        UNDEFINED_URL = 'https://httpbin.org/status/undefined'
-        response = https.get(UNDEFINED_URL)
-        print(response.text)
-
             
     def poll(self):
         self.server.poll()

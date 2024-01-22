@@ -33,7 +33,6 @@ class FountainSimulatedRTC:
         wifi.radio.connect(self.wifi_ssid, self.wifi_password)
         self.socket = socketpool.SocketPool(wifi.radio)
 
-        print (f'(SOCKET = {self.socket}')
 
         context = ssl.create_default_context()
         context.check_hostname = False
@@ -43,12 +42,13 @@ class FountainSimulatedRTC:
         UNDEFINED_URL = 'https://httpbin.org/get'
         UNDEFINED_URL = 'https://google.com'
 
+        '''
         response = self.https.get(UNDEFINED_URL)
         print("-" * 40)
         print("Text Response: ", response.text)
         print("-" * 40)
         response.close()
-    
+        '''
         
 
     
