@@ -18,6 +18,9 @@ import time
 import wifi
 import adafruit_ntp
 
+import ssl
+import adafruit_requests
+
 from adafruit_httpserver import Server, Request, Response, Route, GET, POST
 from boardResources import boardLED
 
@@ -71,11 +74,11 @@ class FountainHTTPServer():
         wifi.radio.connect(self.wifi_ssid, self.wifi_password)
 
         print("Connected to WiFi")
-        pool = socketpool.SocketPool(wifi.radio)
-        self.server = Server(pool, "/static", debug=self.debug)
+        self.pool = socketpool.SocketPool(wifi.radio)
+        self.server = Server(self.pool, "/static", debug=self.debug)
      
         # IH240111 HACK the NTP included
-        self.ntp = adafruit_ntp.NTP(pool)
+        self.ntp = adafruit_ntp.NTP(self.pool)
         
         # add routes
         self.server.add_routes([
@@ -95,11 +98,24 @@ class FountainHTTPServer():
             print("restarting..")
             microcontroller.reset() 
 
+
+        # IH240122 for debugging only
+        https = adafruit_requests.Session(self.pool, ssl.create_default_context())
+        UNDEFINED_URL = 'https://httpbin.org/status/undefined'
+        response = https.get(UNDEFINED_URL)
+        print(response.text)
+
             
     def poll(self):
         self.server.poll()
 
 
+    def getSocket(self):
+        '''
+        this is used for other connections, for example FountainSimulatedRTC
+        '''
+        return self.pool
+    
     def getNTPdatetime(self):
         return self.ntp.datetime() #IH240111 PROBLEM this does not work (-2,"Name or service not known")
     

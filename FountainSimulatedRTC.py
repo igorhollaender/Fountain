@@ -5,13 +5,50 @@
 #
 #    RTC simulated by HTTP request to a standard site
 
-class FountainSimulatedRTC():
 
+# see
+# https://github.com/adafruit/Adafruit_CircuitPython_Requests/blob/main/examples/requests_https_circuitpython.py
+
+
+import adafruit_requests as requests
+import os
+import ssl
+import wifi
+import socketpool
+
+
+class FountainSimulatedRTC:
+    
     def __init__(
                 self, 
+                wifi_ssid,
+                wifi_password,
                 debug=True) -> None:
-
+        
+        self.wifi_ssid = wifi_ssid
+        self.wifi_password = wifi_password
         self.debug = debug
+
+        #  connect to your SSID
+        wifi.radio.connect(self.wifi_ssid, self.wifi_password)
+        self.socket = socketpool.SocketPool(wifi.radio)
+
+        print (f'(SOCKET = {self.socket}')
+
+        context = ssl.create_default_context()
+        context.check_hostname = False
+        self.https = requests.Session(self.socket, context)
+
+        UNDEFINED_URL = 'https://httpbin.org/status/undefined'
+        UNDEFINED_URL = 'https://httpbin.org/get'
+        UNDEFINED_URL = 'https://google.com'
+
+        response = self.https.get(UNDEFINED_URL)
+        print("-" * 40)
+        print("Text Response: ", response.text)
+        print("-" * 40)
+        response.close()
+    
         
 
     

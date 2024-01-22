@@ -14,12 +14,14 @@ import ipaddress
 import os
 import sched
 import time
-import adafruit_ntp
+#  import adafruit_ntp   #IH40122 this is abandoned since it would require opening the 123 port
 from adafruit_httpserver import Request, Response
+
 
 
 from FountainHTTPServer import FountainHTTPServer
 from  FountainShowScheduler import FountainShowScheduler
+from FountainSimulatedRTC import FountainSimulatedRTC
 from boardResources import boardLED, FountainDevice, fountainSimulated, timeResolutionMilliseconds
 
 
@@ -33,6 +35,7 @@ gateway =  ipaddress.IPv4Address("192.168.0.1")       #IH231211 works in BA, W, 
 
 
 fountainDevice = FountainDevice()
+
        
 fountainHTTPServer = FountainHTTPServer(
         os.getenv('CIRCUITPY_WIFI_SSID'),
@@ -41,10 +44,15 @@ fountainHTTPServer = FountainHTTPServer(
         netmask,
         gateway,
         debug=True)
+'''
+fountainSimulatedRTC = FountainSimulatedRTC(
+        os.getenv('CIRCUITPY_WIFI_SSID'),
+        os.getenv('CIRCUITPY_WIFI_PASSWORD'),
+        debug=True)
+'''
 
 fountainGlobalScheduler = sched.scheduler(timefunc=time.time)
 fountainHTTPServer.Start()
-
 
 def runShow(showSchedule=FountainShowScheduler.TestSchedule()):
         print (f'SHOW started at T+{timeToHMS(time.time()-timeAtStart)}')
