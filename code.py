@@ -4,7 +4,7 @@
 #
 #    The Fountain project
 #    
-#     Last revision: IH240112
+#     Last revision: IH240122
 #
 #
 
@@ -28,8 +28,8 @@ from boardResources import boardLED, FountainDevice, fountainSimulated, timeReso
 # ipv4    =  ipaddress.IPv4Address("192.168.0.195")     #IH231219 "192.168.0.195" works in W
 ipv4    =  ipaddress.IPv4Address("192.168.1.30")     #IH231219 "192.168.1.30" works in BV
 
-netmask =  ipaddress.IPv4Address("255.255.255.0")     #IH231211 works in BA, W
-gateway =  ipaddress.IPv4Address("192.168.0.1")       #IH231211 works in BA, W
+netmask =  ipaddress.IPv4Address("255.255.255.0")     #IH231211 works in BA, W, BV
+gateway =  ipaddress.IPv4Address("192.168.0.1")       #IH231211 works in BA, W, BV
 
 
 fountainDevice = FountainDevice()
@@ -60,7 +60,6 @@ def runShow(showSchedule=FountainShowScheduler.TestSchedule()):
                                 FountainHTTPServer.commandFromWebClient = None  
                         if FountainHTTPServer.commandFromWebClient in [FountainHTTPServer.LOOP_STOP, FountainHTTPServer.SHOW_SUBMIT_SCHEDULE]:
                                 fountainShowScheduler.cleanSchedule()          
-                # CONTINUE HERE
                 fountainShowScheduler.runNonblocking()
                 time.sleep(timeResolutionMilliseconds/1000*2)  #IH240108 heuristic 
         print (f'SHOW finished at T+{timeToHMS(time.time()-timeAtStart)}')
@@ -78,26 +77,28 @@ while True:
     try:
         fountainHTTPServer.poll()
         fountainGlobalScheduler.run(blocking=False)
+        if FountainHTTPServer.commandFromWebClient in [FountainHTTPServer.LOOP_STOP]:
+                loopEnabled = False 
+                FountainHTTPServer.commandFromWebClient = None
+                print (f'LOOP stopped at T+{timeToHMS(time.time()-timeAtStart)}')
         if FountainHTTPServer.commandFromWebClient in [FountainHTTPServer.LOOP_START]:
-               loopEnabled = True 
-               FountainHTTPServer.commandFromWebClient = None
+                loopEnabled = True 
+                FountainHTTPServer.commandFromWebClient = None
+        if FountainHTTPServer.commandFromWebClient in [FountainHTTPServer.SHOW_SUBMIT_SCHEDULE]:
+                currentSchedule = FountainShowScheduler.TestSchedule()  # IH240119 for debugging only
+                # IH240122 TODO set the new schedule from web client
+                # IH240119 prepared to set the new schedule from web client        
+                FountainHTTPServer.commandFromWebClient = None
+                print('fountainGlobalScheduler: new schedule loaded')
+                loopEnabled = False 
+                print('fountainGlobalScheduler: waiting for LOOP_START command')
         if loopEnabled and fountainGlobalScheduler.empty():
-                if FountainHTTPServer.commandFromWebClient in [FountainHTTPServer.LOOP_STOP, FountainHTTPServer.SHOW_SUBMIT_SCHEDULE]:
-                        print(f'fountainGlobalScheduler: show scheduled currently stopped')
-                        loopEnabled=False
-                        if FountainHTTPServer.commandFromWebClient in [FountainHTTPServer.SHOW_SUBMIT_SCHEDULE]:
-                               currentSchedule = FountainShowScheduler.TestSchedule()  # IH240119 for debugging only
-                               # IH2401019 TODO set the new schedule from web client
-                           ##### CONTINUE HERE
-                        FountainHTTPServer.commandFromWebClient = None
-                        
-                else:
-                        # schedule next Show
-                        nextScheduledTime = time.time() + 10
-                        print(f'fountainGlobalScheduler: next show scheduled to T+{timeToHMS(nextScheduledTime-timeAtStart)}')
-                        # print(f'current NTP time is {fountainHTTPServer.getNTPdatetime()}') #IH240111 does not work
-                        fountainGlobalScheduler.enterabs(nextScheduledTime,1,runShow,kwargs={'showSchedule':currentSchedule})
-
+                # schedule next Show
+                nextScheduledTime = time.time() + 10
+                print(f'fountainGlobalScheduler: next show scheduled to T+{timeToHMS(nextScheduledTime-timeAtStart)}')
+                # print(f'current NTP time is {fountainHTTPServer.getNTPdatetime()}') #IH240111 does not work due to disabled port 123
+                fountainGlobalScheduler.enterabs(nextScheduledTime,1,runShow,kwargs={'showSchedule':currentSchedule})
+                               
         time.sleep(timeResolutionMilliseconds/1000*2)  #IH240108 heuristic
      
     except Exception as e:

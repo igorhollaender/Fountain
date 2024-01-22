@@ -1,7 +1,7 @@
 #
 #    f o u n t a i n   H T T P   S e r v e r . p y 
 #
-#    Last revision: IH240119
+#    Last revision: IH240122
 #
 #
 #    based on 
@@ -122,10 +122,20 @@ class FountainHTTPServer():
         #  if the led off button was pressed
         if "OFF" in raw_text:
             boardLED.value = False
-        #  stop current show (but continue loop)
-        if "SHOW_STOP" in raw_text:
+        
+        if "SHOW_STOP" in raw_text:  #  stop current show (but continue loop)
             FountainHTTPServer.commandFromWebClient = FountainHTTPServer.SHOW_STOP
             FountainHTTPServer.kwargsFromWebClient = {}
+        if "SHOW_SUBMIT_SCHEDULE" in raw_text:  #  stop loop if running,load new schedule and wait for next LOOP_START
+            FountainHTTPServer.commandFromWebClient = FountainHTTPServer.SHOW_SUBMIT_SCHEDULE
+            #Ih240122 TODO assign new schedule text from HTTP response (TEXTBOX_SHOW_SCHEDULE)
+            FountainHTTPServer.kwargsFromWebClient = {}  # IH240122 for debugging only
+        if "LOOP_STOP" in raw_text: #  finish loop and wait for next LOOP_START command
+            FountainHTTPServer.commandFromWebClient = FountainHTTPServer.LOOP_STOP
+            FountainHTTPServer.kwargsFromWebClient = {}
+        if "LOOP_START" in raw_text:  #  start loop (do nothing if loop already running)
+            FountainHTTPServer.commandFromWebClient = FountainHTTPServer.LOOP_START
+            FountainHTTPServer.kwargsFromWebClient = {}    
         #  reload site
         return Response(request, f"{FountainHTTPServer.Webpage()}", content_type='text/html')
 
