@@ -57,9 +57,9 @@ def runShow(showSchedule=FountainShowScheduler.TestSchedule()):
                 if FountainHTTPServer.commandFromWebClient is not None:
                         if FountainHTTPServer.commandFromWebClient==FountainHTTPServer.SHOW_STOP:
                                 fountainShowScheduler.cleanSchedule()
-                                FountainHTTPServer.commandFromWebClient = None  
                         if FountainHTTPServer.commandFromWebClient in [FountainHTTPServer.LOOP_STOP, FountainHTTPServer.SHOW_SUBMIT_SCHEDULE]:
-                                fountainShowScheduler.cleanSchedule()          
+                                fountainShowScheduler.cleanSchedule()    
+                                FountainHTTPServer.commandFromWebClient = None      
                 fountainShowScheduler.runNonblocking()
                 time.sleep(timeResolutionMilliseconds/1000*2)  #IH240108 heuristic 
         print (f'SHOW finished at T+{timeToHMS(time.time()-timeAtStart)}')
@@ -76,11 +76,12 @@ currentSchedule = FountainShowScheduler.TestSchedule()
 while True:
     try:
         fountainHTTPServer.poll()
-        fountainGlobalScheduler.run(blocking=False)
         if FountainHTTPServer.commandFromWebClient in [FountainHTTPServer.LOOP_STOP]:
                 loopEnabled = False 
                 FountainHTTPServer.commandFromWebClient = None
                 print (f'LOOP stopped at T+{timeToHMS(time.time()-timeAtStart)}')
+        if loopEnabled:
+                fountainGlobalScheduler.run(blocking=False)
         if FountainHTTPServer.commandFromWebClient in [FountainHTTPServer.LOOP_START]:
                 loopEnabled = True 
                 FountainHTTPServer.commandFromWebClient = None
@@ -98,7 +99,8 @@ while True:
                 print(f'fountainGlobalScheduler: next show scheduled to T+{timeToHMS(nextScheduledTime-timeAtStart)}')
                 # print(f'current NTP time is {fountainHTTPServer.getNTPdatetime()}') #IH240111 does not work due to disabled port 123
                 fountainGlobalScheduler.enterabs(nextScheduledTime,1,runShow,kwargs={'showSchedule':currentSchedule})
-                               
+                # runShow may leave a commandFromWebClient pending
+                                  
         time.sleep(timeResolutionMilliseconds/1000*2)  #IH240108 heuristic
      
     except Exception as e:
