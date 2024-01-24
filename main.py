@@ -96,9 +96,17 @@ while True:
         if FountainHTTPServer.commandFromWebClient in [FountainHTTPServer.SHOW_SUBMIT_SCHEDULE]:
                 currentSchedule = FountainShowScheduler.TestSchedule()  # IH240119 for debugging only
                 # IH240122 TODO set the new schedule from web client
-                # IH240119 prepared to set the new schedule from web client        
+                # IH240119 prepared to set the new schedule from web client  
                 FountainHTTPServer.commandFromWebClient = None
-                print('fountainGlobalScheduler: new schedule loaded')
+                print('fountainGlobalScheduler: new schedule loaded: ')
+                print(FountainHTTPServer.kwargsFromWebClient['show_schedule'])       
+                if FountainShowScheduler.validateSchedule(FountainHTTPServer.kwargsFromWebClient['show_schedule']):
+                       currentSchedule = FountainShowScheduler.convertSchedule(
+                              FountainHTTPServer.kwargsFromWebClient['show_schedule'])
+                       print('fountainGlobalScheduler: schedule validated.')
+                else:
+                       currentSchedule = FountainShowScheduler.DefaultSchedule()
+                       print('fountainGlobalScheduler: schedule validation failed. Default schedule loaded.')  
                 loopEnabled = False 
                 print('fountainGlobalScheduler: waiting for LOOP_START command')
         if loopEnabled and fountainGlobalScheduler.empty():

@@ -112,6 +112,28 @@ class FountainHTTPServer():
     def getNTPdatetime(self):
         return self.ntp.datetime() #IH240111 PROBLEM this does not work (-2,"Name or service not known")
     
+
+    @staticmethod
+    def url_parse(url):
+        """
+        see https://stackoverflow.com/questions/16566069/url-decode-utf-8-in-python
+        """
+        l = len(url)
+        data = bytearray()
+        i = 0
+        while i < l:
+            if url[i] != '%':
+                if url[i] == '+':  #IH240124 added
+                    d = ord(' ')
+                else:
+                    d = ord(url[i])
+                i += 1
+            else:
+                d = int(url[i+1:i+3], 16)
+                i += 3
+            data.append(d)
+        return data.decode('utf8')
+    
     #  route request processing functions
 
     @staticmethod
@@ -142,8 +164,8 @@ class FountainHTTPServer():
             FountainHTTPServer.kwargsFromWebClient = {}
         if "BUTTON_SHOW_SUBMIT_SCHEDULE" in form_data:  #  stop loop if running,load new schedule and wait for next LOOP_START
             FountainHTTPServer.commandFromWebClient = FountainHTTPServer.SHOW_SUBMIT_SCHEDULE
-            #IH240122 TODO assign new schedule text from HTTP response (TEXTBOX_SHOW_SCHEDULE)
-            FountainHTTPServer.kwargsFromWebClient = {}  # IH240122 for debugging only
+            #IH240122 TODO assign new schedule text from HTTP response (TEXTAREA_SHOW_SCHEDULE)
+            FountainHTTPServer.kwargsFromWebClient = {'show_schedule':FountainHTTPServer.url_parse(form_data['TEXTAREA_SHOW_SCHEDULE'])} 
         if "BUTTON_LOOP_STOP" in form_data: #  finish loop and wait for next LOOP_START command
             FountainHTTPServer.commandFromWebClient = FountainHTTPServer.LOOP_STOP
             FountainHTTPServer.kwargsFromWebClient = {}
@@ -156,6 +178,25 @@ class FountainHTTPServer():
     @staticmethod
     def Webpage():
         font_family = "monospace"
+        schedule_text = f"""
+abcd
+efgh
+ijkl
+0123 4567
+999
+()
+{{}}
+        []
+abcd
+    efgh
+        ijkl
+            0123 4567
+999
+()
+{{}}
+[]
+"""
+
         html = f"""
         <!DOCTYPE html>
         <html>
@@ -203,11 +244,11 @@ class FountainHTTPServer():
             background-color: grey; 
             }}
 
-        .textbox {{
+        .textarea {{
             font-family: {font_family};
             font-size: 1.0rem;
-            height:  200px;
             width:  80%;
+            height:  300px;
             }}
 
         p.dotted {{
@@ -279,7 +320,7 @@ class FountainHTTPServer():
 
         <form accept-charset="utf-8" method="POST">
         <p>
-        <input class="textbox" name="TEXTBOX_SHOW_SCHEDULE" value="abcdef" ></input>
+        <textarea class="textarea" name="TEXTAREA_SHOW_SCHEDULE">{schedule_text}</textarea>
         </p>
         <p>
         <button class="button" id="BUTTON_SHOW_SUBMIT_SCHEDULE" name="BUTTON_SHOW_SUBMIT_SCHEDULE" 

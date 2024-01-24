@@ -1,7 +1,7 @@
 #
 #    f o u n t a i n   S h o w   S c h e d u l e r . p y 
 #
-#    Last revision: IH240118
+#    Last revision: IH240124
 #
 
 import sched
@@ -41,7 +41,22 @@ class FountainShowScheduler():
                 deviceAction.action,
                 kwargs=deviceAction.kwargs))
 
-
+    @staticmethod
+    def validateSchedule(schedule) -> bool:
+         """
+         returns True is the schedule is correctly formed
+         """
+         #IH240124 TODO implement
+         return True  
+    
+    @staticmethod
+    def convertSchedule(schedule):
+         """
+         converts the schedule from client text format to native format
+         """
+         #IH240124 TODO implement
+         return FountainShowScheduler.TestSchedule() #IH240124 for debugging only
+    
     def cleanSchedule(self):
         """
         delete all scheduled events
@@ -60,6 +75,15 @@ class FountainShowScheduler():
     def runNonblocking(self):
         self.scheduler.run(blocking=False)  
 
+
+    @staticmethod
+    def DefaultSchedule():
+        schedule = [
+             # setting all devices to idle
+            ScheduledDeviceAction(0,FountainDevice.PUMP1,FountainDevice.pwm_setStatic,kwargs={'pwm_percentage': 0}),
+        ]
+        return schedule
+    
     @staticmethod
     def TestSchedule():
         schedule = [
