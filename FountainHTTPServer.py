@@ -179,7 +179,8 @@ class FountainHTTPServer():
     @staticmethod
     def Webpage():
         font_family = "monospace"
-        schedule_text = FountainShowScheduler.
+        schedule_text = FountainShowScheduler.FountainShowScheduler.convertScheduleToSimple(
+                            FountainShowScheduler.FountainShowScheduler.TestSchedule())
         html = f"""
         <!DOCTYPE html>
         <html>
