@@ -42,13 +42,14 @@ class FountainSimulatedRTC:
         UNDEFINED_URL = 'https://httpbin.org/get'
         UNDEFINED_URL = 'https://google.com'
 
-        '''
+        # IH240123 PROBLEM HERE this does not work (probably a port problem?)
+        # gaierror: (-2, 'Name or service not known')
         response = self.https.get(UNDEFINED_URL)
         print("-" * 40)
         print("Text Response: ", response.text)
         print("-" * 40)
         response.close()
-        '''
+        
         
 
     

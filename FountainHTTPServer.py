@@ -1,7 +1,7 @@
 #
 #    f o u n t a i n   H T T P   S e r v e r . p y 
 #
-#    Last revision: IH240122
+#    Last revision: IH240124
 #
 #
 #    based on 
@@ -78,7 +78,7 @@ class FountainHTTPServer():
         self.server = Server(self.pool, "/static", debug=self.debug)
      
         # IH240111 HACK the NTP included
-        self.ntp = adafruit_ntp.NTP(self.pool)
+        # self.ntp = adafruit_ntp.NTP(self.pool)
         
         # add routes
         self.server.add_routes([
@@ -123,26 +123,31 @@ class FountainHTTPServer():
     @staticmethod
     def buttonpress(request: Request):
         #  get the raw text
-        raw_text = request.raw_request.decode("utf8")
-        print(f'raw_text is "{raw_text}"')
+        #  raw_text = request.raw_request.decode("utf8")
+        #  print(f'raw_text is "{raw_text}"')
+
+        form_data = request.form_data
+        print(f'form data is "{form_data}"')
+
+        # for debugging
         #  if the led on button was pressed
-        if "ON" in raw_text:
+        if "BUTTON_LED_ON" in form_data:
             boardLED.value = True
         #  if the led off button was pressed
-        if "OFF" in raw_text:
+        if "BUTTON_LED_OFF" in form_data:
             boardLED.value = False
         
-        if "SHOW_STOP" in raw_text:  #  stop current show (but continue loop)
+        if "BUTTON_SHOW_STOP" in form_data:  #  stop current show (but continue loop)
             FountainHTTPServer.commandFromWebClient = FountainHTTPServer.SHOW_STOP
             FountainHTTPServer.kwargsFromWebClient = {}
-        if "SHOW_SUBMIT_SCHEDULE" in raw_text:  #  stop loop if running,load new schedule and wait for next LOOP_START
+        if "BUTTON_SHOW_SUBMIT_SCHEDULE" in form_data:  #  stop loop if running,load new schedule and wait for next LOOP_START
             FountainHTTPServer.commandFromWebClient = FountainHTTPServer.SHOW_SUBMIT_SCHEDULE
-            #Ih240122 TODO assign new schedule text from HTTP response (TEXTBOX_SHOW_SCHEDULE)
+            #IH240122 TODO assign new schedule text from HTTP response (TEXTBOX_SHOW_SCHEDULE)
             FountainHTTPServer.kwargsFromWebClient = {}  # IH240122 for debugging only
-        if "LOOP_STOP" in raw_text: #  finish loop and wait for next LOOP_START command
+        if "BUTTON_LOOP_STOP" in form_data: #  finish loop and wait for next LOOP_START command
             FountainHTTPServer.commandFromWebClient = FountainHTTPServer.LOOP_STOP
             FountainHTTPServer.kwargsFromWebClient = {}
-        if "LOOP_START" in raw_text:  #  start loop (do nothing if loop already running)
+        if "BUTTON_LOOP_START" in form_data:  #  start loop (do nothing if loop already running)
             FountainHTTPServer.commandFromWebClient = FountainHTTPServer.LOOP_START
             FountainHTTPServer.kwargsFromWebClient = {}    
         #  reload site
@@ -182,7 +187,7 @@ class FountainHTTPServer():
             }}
         
         .button {{
-            font-family: {font_family};^
+            font-family: {font_family};
             display: inline-block;
             background-color: black; 
             border: none;
@@ -193,6 +198,9 @@ class FountainHTTPServer():
             font-size: 30px; 
             margin: 2px; 
             cursor: pointer;
+            }}
+        .button:disabled {{
+            background-color: grey; 
             }}
 
         .textbox {{
@@ -211,21 +219,61 @@ class FountainHTTPServer():
         </style>
         </head>
 
+        <script>
+        var status_show_running;
+        var status_loop_running;
+        
+        function UpdateUI() {{
+            if (status_show_running){{
+                document.getElementById("BUTTON_SHOW_STOP").disabled = false;
+                document.getElementById("BUTTON_LOOP_STOP").disabled = false;
+            }}
+            if (status_loop_running){{
+                document.getElementById("BUTTON_SHOW_STOP").disabled = false;
+                document.getElementById("BUTTON_LOOP_STOP").disabled = false;
+                document.getElementById("BUTTON_LOOP_START").disabled = true;
+            }}
+            else{{
+                document.getElementById("BUTTON_SHOW_STOP").disabled = true;
+                document.getElementById("BUTTON_LOOP_STOP").disabled = true;
+                document.getElementById("BUTTON_LOOP_START").disabled = false;
+            }}
+        }}
+
+        function SubmitCommand() {{
+            // document.getElementById("FORM_BUTTON_CONTROLS").submit()
+        }}
+
+        function initialize_page() {{
+            status_show_running=true;
+            status_loop_running=true;
+            UpdateUI();
+        }}
+
+        function led_control(turn_led_on){{SubmitCommand();}}
+        function show_stop() {{status_show_running=false;UpdateUI();SubmitCommand();}}
+        function loop_stop() {{status_loop_running=false;status_show_running=false;UpdateUI();SubmitCommand();}}
+        function loop_start() {{status_loop_running=true;status_show_running=true;UpdateUI();SubmitCommand();}}
+        function show_submit_schedule() {{status_loop_running=false;status_show_running=false;UpdateUI();SubmitCommand();}}
+        </script>
+
         <body>
         <title>Fountain HTTP Server</title>
         <h1>Fountain HTTP Server</h1>
         
+    
         
-        <form accept-charset="utf-8" method="POST">
+        <form id="FORM_BUTTON_CONTROLS" accept-charset="utf-8" method="POST">
         <p>
-        <button class="button" name="LED ON" value="ON" type="submit">LED ON</button>
-        <button class="button" name="LED OFF" value="OFF" type="submit">LED OFF</button>
+        <button class="button" id="BUTTON_LED_ON"  name="BUTTON_LED_ON" type="submit" >LED ON</button>
+        <button class="button" id="BUTTON_LED_OFF" name="BUTTON_LED_OFF" type="submit" >LED OFF</button>
         </p>
         <p>
-        <button class="button" name="BUTTON_SHOW_STOP" value="SHOW_STOP" type="submit">STOP SHOW</button>
-        <button class="button" name="BUTTON_LOOP_STOP" value="LOOP_STOP" type="submit">STOP LOOP</button>
-        <button class="button" name="BUTTON_LOOP_START" value="LOOP_START" type="submit">START LOOP</button>
+        <button class="button" id="BUTTON_SHOW_STOP" name="BUTTON_SHOW_STOP">STOP SHOW</button>
         </p>
+        <p>
+        <button class="button" id="BUTTON_LOOP_START" name="BUTTON_LOOP_START" >START LOOP</button>
+        <button class="button" id="BUTTON_LOOP_STOP"  name="BUTTON_LOOP_STOP" >STOP LOOP</button>
         </p>
         </form>
 
@@ -234,7 +282,8 @@ class FountainHTTPServer():
         <input class="textbox" name="TEXTBOX_SHOW_SCHEDULE" value="abcdef" ></input>
         </p>
         <p>
-        <button class="button" name="SHOW_SUBMIT_SCHEDULE" value="SHOW_SUBMIT_SCHEDULE" type="submit">SUBMIT SHOW SCHEDULE</button>
+        <button class="button" id="BUTTON_SHOW_SUBMIT_SCHEDULE" name="BUTTON_SHOW_SUBMIT_SCHEDULE" 
+        type="submit">SUBMIT SHOW SCHEDULE</button>
         </p>
         </form>
         
