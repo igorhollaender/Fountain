@@ -1,7 +1,7 @@
 #
 #    b o a r d    R e s o u r c e s  . p y 
 #
-#    Last revision: IH240108
+#    Last revision: IH240124
 #
 #
 
@@ -38,14 +38,17 @@ class FountainDevice():
     LED1    = 3
     LED2    = 4
 
+    #IH240124 TODO  implement in a more elegant way
+    DeviceSimpleFormat = ["","PUMP1","PUMP2","LED1","LED2"]
+
     def __init__(self) -> None:
         # print (fountainSimulated)
         pass
         
     
     # hardware control methods
-    
-    def pwm_setStatic(device=0, pwm_percentage=100):
+
+    def pwm_setConstant(device=0, pwm_percentage=100):
         global fountainSimulated
         #IH231219 TODO
         if fountainSimulated:

@@ -23,6 +23,7 @@ import adafruit_requests
 
 from adafruit_httpserver import Server, Request, Response, Route, GET, POST
 from boardResources import boardLED
+import FountainShowScheduler
 
 
 
@@ -178,25 +179,7 @@ class FountainHTTPServer():
     @staticmethod
     def Webpage():
         font_family = "monospace"
-        schedule_text = f"""
-abcd
-efgh
-ijkl
-0123 4567
-999
-()
-{{}}
-        []
-abcd
-    efgh
-        ijkl
-            0123 4567
-999
-()
-{{}}
-[]
-"""
-
+        schedule_text = FountainShowScheduler.
         html = f"""
         <!DOCTYPE html>
         <html>
