@@ -1,8 +1,7 @@
 #
 #    f o u n t a i n   S h o w   S c h e d u l e r . p y 
 #
-#    Last revision: IH240124
-#
+#    Last revision: IH240125
 
 import sched
 import time
@@ -11,7 +10,7 @@ from collections import namedtuple
 from boardResources import FountainDevice
 
 
-ScheduledDeviceAction = namedtuple('ScheduledDeviceAction', 'time device action kwargs')
+ScheduledDeviceAction = namedtuple('ScheduledDeviceAction', 'time device method kwargs')
 
 class FountainShowScheduler():
 
@@ -29,7 +28,6 @@ class FountainShowScheduler():
         self.scheduledEventList = []
         self.setSchedule(self.showSchedule)
         
-
         # print(f"FOUNTAIN--> Actual queue: {self.scheduler.queue}")
 
     def setSchedule(self,schedule):
@@ -38,7 +36,7 @@ class FountainShowScheduler():
             self.scheduledEventList.append(self.scheduler.enter(
                 deviceAction.time + self.startDelayMilliSeconds/1000,
                 deviceAction.device,  #the device ID number defines priority
-                deviceAction.action,
+                deviceAction.method,
                 kwargs=deviceAction.kwargs))
 
     @staticmethod
@@ -58,6 +56,7 @@ class FountainShowScheduler():
             actionInSimpleFormat = ""
             actionInSimpleFormat += str(actionInNativeFormat.time) + ','
             actionInSimpleFormat += FountainDevice.DeviceSimpleFormat[actionInNativeFormat.device] + ','
+            # actionInSimpleFormat += FountainDevice.MethodNativeFormat[actionInNativeFormat.method] + ','
             # CONTINUE HERE
             return actionInSimpleFormat
             
