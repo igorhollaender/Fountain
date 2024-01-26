@@ -1,7 +1,7 @@
 #
 #    b o a r d    R e s o u r c e s  . p y 
 #
-#    Last revision: IH240125
+#    Last revision: IH240126
 #
 #
 
@@ -44,14 +44,22 @@ class FountainDevice():
             LED1:"LED1",
             LED2:"LED2",
             }
-    MethodSimpleFormat = {}
-    MethodNativeFormat = {}
-
+    #IH240126 HACK Dangereous!
+    def DeviceNativeFormat(device_str): #inversed DeviceSimpleFormat dictionary
+        return list(FountainDevice.DeviceSimpleFormat.keys())[list(FountainDevice.DeviceSimpleFormat.values()).index(device_str)]
+    
     def __init__(self) -> None:
         # print (fountainSimulated)
         pass
         
     # hardware control methods
+    #IH240126 TODO  implement in a more elegant way
+    def MethodNativeFormat(method_simpleFormatID):
+        for method in [
+                FountainDevice.pwm_setConstant,
+                FountainDevice.pwm_setLinearRamp]:
+            if method(getSimpleFormatID=True)==method_simpleFormatID:
+                return method
 
     def pwm_setConstant(device=0, pwm_percentage=100, getSimpleFormatID=False):
         global fountainSimulated

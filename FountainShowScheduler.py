@@ -40,12 +40,11 @@ class FountainShowScheduler():
                 kwargs=deviceAction.kwargs))
 
     @staticmethod
-    def validateSchedule(schedule) -> bool:
+    def validateSchedule(scheduleInSimpleFormat) -> bool:
         """
         returns True is the schedule is correctly formed
         """
-        #IH240124 TODO implement
-        return True  
+        return FountainShowScheduler.convertScheduleToNative(scheduleInSimpleFormat)[1] == 'OK'  
     
     @staticmethod
     def convertScheduleToSimple(scheduleInNativeFormat):
@@ -77,19 +76,23 @@ class FountainShowScheduler():
             For full list of device IDs, see boardResources.py.
             For full list of PWM actions, see boardResources.py.
         """
-        #IH240124 TODO implement
-        def convertActionToNative(actionInNativeFormat: str) -> ScheduledDeviceAction:
+
+        #IH240126 TODO implement full parser with format error detection
+        def convertActionToNative(actionInSimpleFormat: str) -> ScheduledDeviceAction:
+            time_str,device_str,method_str,kwargs_str = actionInSimpleFormat.split(",")
             return ScheduledDeviceAction(
-                time=0,
-                device = FountainDevice.PUMP1,
-                method=  FountainDevice.pwm_setConstant,
-                kwargs= {}
+                time=float(time_str),
+                device = FountainDevice.DeviceNativeFormat(device_str),
+                method = FountainDevice.MethodNativeFormat(method_str),
+                kwargs = eval(kwargs_str)
             )
-            
-        return []
-        
-        # return FountainShowScheduler.TestSchedule() #IH240124 for debugging only
-    
+        error="OK"
+        try:
+            scheduleInNativeFormat = [convertActionToNative(actionInSimpleFormat) for actionInSimpleFormat in scheduleInSimpleFormat.split("\n")]
+        except:  # if format invalid 
+            scheduleInNativeFormat = ""
+            error="INVALID"
+        return scheduleInNativeFormat,error
    
 
     def cleanSchedule(self):
@@ -129,9 +132,9 @@ class FountainShowScheduler():
             # device action with time=0 is used to initialize the devices
 
             ScheduledDeviceAction(1.0,FountainDevice.PUMP1,FountainDevice.pwm_setConstant,kwargs={'pwm_percentage': 0}),
-            ScheduledDeviceAction(3.0,FountainDevice.PUMP1,FountainDevice.pwm_setConstant,kwargs={'pwm_percentage': 100}),
+            ScheduledDeviceAction(3.0,FountainDevice.PUMP2,FountainDevice.pwm_setConstant,kwargs={'pwm_percentage': 100}),
             ScheduledDeviceAction(5.0,FountainDevice.PUMP1,FountainDevice.pwm_setConstant,kwargs={'pwm_percentage': 0}),
-            ScheduledDeviceAction(7.0,FountainDevice.PUMP1,FountainDevice.pwm_setConstant,kwargs={'pwm_percentage': 100}),
-            ScheduledDeviceAction(8.0,FountainDevice.PUMP1,FountainDevice.pwm_setConstant,kwargs={'pwm_percentage': 0}),
+            ScheduledDeviceAction(7.0,FountainDevice.PUMP2,FountainDevice.pwm_setConstant,kwargs={'pwm_percentage': 100}),
+            ScheduledDeviceAction(8.0,FountainDevice.LED1,FountainDevice.pwm_setConstant,kwargs={'pwm_percentage': 0}),
         ]
         return schedule

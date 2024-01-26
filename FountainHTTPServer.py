@@ -26,7 +26,6 @@ from boardResources import boardLED
 import FountainShowScheduler
 
 
-
 class FountainHTTPServer():
 
     # Commands from web client
@@ -180,7 +179,9 @@ class FountainHTTPServer():
     def Webpage():
         font_family = "monospace"
         schedule_text = FountainShowScheduler.FountainShowScheduler.convertScheduleToSimple(
-                            FountainShowScheduler.FountainShowScheduler.TestSchedule())
+                            FountainShowScheduler.FountainShowScheduler.TestSchedule()) 
+        #IH24012 for debugging only
+        # schedule_text += "\n" + str(FountainShowScheduler.FountainShowScheduler.convertScheduleToNative(schedule_text)[0])
         html = f"""
         <!DOCTYPE html>
         <html>

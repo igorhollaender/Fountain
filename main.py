@@ -46,9 +46,9 @@ fountainHTTPServer = FountainHTTPServer(
 
 # IH240122 PROBLEM HERE this does not work 
 # fountainSimulatedRTC = FountainSimulatedRTC(
-#         os.getenv('CIRCUITPY_WIFI_SSID'),
-#         os.getenv('CIRCUITPY_WIFI_PASSWORD'),
-#         debug=True)
+#          os.getenv('CIRCUITPY_WIFI_SSID'),
+#          os.getenv('CIRCUITPY_WIFI_PASSWORD'),
+#          debug=True)
 
 
 fountainGlobalScheduler = sched.scheduler(timefunc=time.time)
@@ -102,8 +102,8 @@ while True:
                 print('fountainGlobalScheduler: new schedule loaded: ')
                 print(FountainHTTPServer.kwargsFromWebClient['show_schedule'])       
                 if FountainShowScheduler.validateSchedule(FountainHTTPServer.kwargsFromWebClient['show_schedule']):
-                       currentSchedule = FountainShowScheduler.convertSchedule(
-                              FountainHTTPServer.kwargsFromWebClient['show_schedule'])
+                       currentSchedule = FountainShowScheduler.convertScheduleToNative(
+                              FountainHTTPServer.kwargsFromWebClient['show_schedule'])[0]  #the first element of the tuple is the schedule
                        print('fountainGlobalScheduler: schedule validated.')
                 else:
                        currentSchedule = FountainShowScheduler.DefaultSchedule()

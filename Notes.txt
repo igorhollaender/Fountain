@@ -1,13 +1,20 @@
 
 
-
+-----------
+path to circup
 c:\users\igor.hollaender\appdata\local\packages\pythonsoftwarefoundation.python.3.12_qbz5n2kfra8p0\localcache\local-packages\python312\site-packages (from requests>=2.22.0->circup) (2023.11.17)
-
 
 C:\Users\igor.hollaender\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\Scripts\circup
 
 C:\Users\tatino\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\LocalCache\local-packages\Python312\Scripts
 
+-----------
 circup installation:
 solution to 'no module named pkg_resources' problem:
 pip install setuptools
+
+------------
+the main module has to be name main.py (not code.py)
+to prevent pylance from annoying warnings
+
+------------

@@ -1,7 +1,7 @@
 #
 #    F o u n t a i n   S i m u l a t e d   R T C . p y 
 #
-#    Last revision: IH240122
+#    Last revision: IH240126
 #
 #    RTC simulated by HTTP request to a standard site
 
@@ -41,6 +41,7 @@ class FountainSimulatedRTC:
         UNDEFINED_URL = 'https://httpbin.org/status/undefined'
         UNDEFINED_URL = 'https://httpbin.org/get'
         UNDEFINED_URL = 'https://google.com'
+        UNDEFINED_URL = 'http://httpbin.org/status/undefined'   # UNSECURE but doesnot need ssl/tsl
 
         # IH240123 PROBLEM HERE this does not work (probably a port problem?)
         # gaierror: (-2, 'Name or service not known')
