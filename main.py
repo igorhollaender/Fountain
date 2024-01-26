@@ -4,7 +4,7 @@
 #
 #     The Fountain project
 #    
-#     Last revision: IH240125
+#     Last revision: IH240126
 #
 #
 
@@ -25,9 +25,9 @@ from boardResources import boardLED, FountainDevice, fountainSimulated, timeReso
 
 
 
-ipv4    =  ipaddress.IPv4Address("192.168.0.110")     #IH231211 "192.168.0.110" works in BA
+# ipv4    =  ipaddress.IPv4Address("192.168.0.110")     #IH231211 "192.168.0.110" works in BA
 # ipv4    =  ipaddress.IPv4Address("192.168.0.195")     #IH231219 "192.168.0.195" works in W
-# ipv4    =  ipaddress.IPv4Address("192.168.1.30")     #IH231219 "192.168.1.30" works in BV
+ipv4    =  ipaddress.IPv4Address("192.168.1.30")     #IH231219 "192.168.1.30" works in BV
 
 netmask =  ipaddress.IPv4Address("255.255.255.0")     #IH231211 works in BA, W, BV
 gateway =  ipaddress.IPv4Address("192.168.0.1")       #IH231211 works in BA, W, BV
@@ -35,15 +35,6 @@ gateway =  ipaddress.IPv4Address("192.168.0.1")       #IH231211 works in BA, W, 
 
 fountainDevice = FountainDevice()
 
-#IH240125 HACK: this should be done in the FountainDevice method
-fountainDevice.MethodSimpleFormat = {
-        FountainDevice.pwm_setConstant(getSimpleFormatID=True): FountainDevice.pwm_setConstant,
-        FountainDevice.pwm_setLinearRamp(getSimpleFormatID=True): FountainDevice.pwm_setLinearRamp,
-        }
-fountainDevice.MethodNativeFormat = {
-        FountainDevice.pwm_setConstant : FountainDevice.pwm_setConstant(getSimpleFormatID=True),
-        FountainDevice.pwm_setLinearRamp : FountainDevice.pwm_setLinearRamp(getSimpleFormatID=True),
-        }
     
 fountainHTTPServer = FountainHTTPServer(
         os.getenv('CIRCUITPY_WIFI_SSID'),

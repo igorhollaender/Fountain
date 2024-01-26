@@ -1,7 +1,7 @@
 #
 #    f o u n t a i n   S h o w   S c h e d u l e r . p y 
 #
-#    Last revision: IH240125
+#    Last revision: IH240126
 
 import sched
 import time
@@ -56,8 +56,9 @@ class FountainShowScheduler():
             actionInSimpleFormat = ""
             actionInSimpleFormat += str(actionInNativeFormat.time) + ','
             actionInSimpleFormat += FountainDevice.DeviceSimpleFormat[actionInNativeFormat.device] + ','
-            # actionInSimpleFormat += FountainDevice.MethodNativeFormat[actionInNativeFormat.method] + ','
-            # CONTINUE HERE
+            actionInSimpleFormat += actionInNativeFormat.method(getSimpleFormatID=True) + ','
+            actionInSimpleFormat += str(actionInNativeFormat.kwargs) #IH240126 TODO find a more elegant stringifying for this
+            
             return actionInSimpleFormat
             
         return "\n".join(map(convertActionToSimple,scheduleInNativeFormat))
@@ -77,7 +78,17 @@ class FountainShowScheduler():
             For full list of PWM actions, see boardResources.py.
         """
         #IH240124 TODO implement
-        return FountainShowScheduler.TestSchedule() #IH240124 for debugging only
+        def convertActionToNative(actionInNativeFormat: str) -> ScheduledDeviceAction:
+            return ScheduledDeviceAction(
+                time=0,
+                device = FountainDevice.PUMP1,
+                method=  FountainDevice.pwm_setConstant,
+                kwargs= {}
+            )
+            
+        return []
+        
+        # return FountainShowScheduler.TestSchedule() #IH240124 for debugging only
     
    
 
