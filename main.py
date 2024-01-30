@@ -95,7 +95,7 @@ while True:
                 loopEnabled = True 
                 FountainHTTPServer.commandFromWebClient = None
         if FountainHTTPServer.commandFromWebClient in [FountainHTTPServer.SHOW_SUBMIT_SCHEDULE]:
-                currentSchedule = FountainShowScheduler.TestSchedule()  # IH240119 for debugging only
+                # currentSchedule = FountainShowScheduler.TestSchedule()  # IH240119 for debugging only
                 # IH240122 TODO set the new schedule from web client
                 # IH240119 prepared to set the new schedule from web client  
                 FountainHTTPServer.commandFromWebClient = None
@@ -109,6 +109,8 @@ while True:
                        currentSchedule = FountainShowScheduler.DefaultSchedule()
                        print('fountainGlobalScheduler: schedule validation failed. Default schedule loaded.')  
                 loopEnabled = False 
+                #IH240130 TODO clean fountainGlobalScheduler queue here 
+                fountainGlobalScheduler.cleanSchedule()
                 print('fountainGlobalScheduler: waiting for LOOP_START command')
         if loopEnabled and fountainGlobalScheduler.empty():
                 # schedule next Show

@@ -89,7 +89,8 @@ class FountainShowScheduler():
         error="OK"
         try:
             scheduleInNativeFormat = [convertActionToNative(actionInSimpleFormat) for actionInSimpleFormat in scheduleInSimpleFormat.split("\n")]
-        except:  # if format invalid 
+        except Exception as expt:  # if format invalid 
+            print (expt)
             scheduleInNativeFormat = ""
             error="INVALID"
         return scheduleInNativeFormat,error

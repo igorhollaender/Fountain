@@ -1,7 +1,7 @@
 #
 #    s c h e d  . p y 
 #
-#    Last revision: IH240109
+#    Last revision: IH240130
 #
 #    Adaptation of the sched.py
 
@@ -127,6 +127,19 @@ class scheduler:
 
         self._queue.remove(event)
         heapq.heapify(self._queue)
+
+    def cleanSchedule(self):
+        """
+        IH240130 added
+        delete all scheduled events
+        """
+        for event in self._queue:
+            try:
+                # event may not be in the sequence
+                self.cancel(event)
+            except:
+                pass
+        self._queue=[]
 
     def empty(self):
         """Check whether the queue is empty."""
