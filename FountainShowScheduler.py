@@ -1,7 +1,7 @@
 #
 #    f o u n t a i n   S h o w   S c h e d u l e r . p y 
 #
-#    Last revision: IH240126
+#    Last revision: IH240130
 
 import sched
 import time
@@ -26,6 +26,7 @@ class FountainShowScheduler():
         self.startDelayMilliSeconds = startDelayMilliSeconds
 
         self.scheduledEventList = []
+        self.cleanupEventList = []
         self.setSchedule(self.showSchedule)
         
         # print(f"FOUNTAIN--> Actual queue: {self.scheduler.queue}")
@@ -33,11 +34,18 @@ class FountainShowScheduler():
     def setSchedule(self,schedule):
         self.cleanSchedule()
         for deviceAction in schedule:
-            self.scheduledEventList.append(self.scheduler.enter(
-                deviceAction.time + self.startDelayMilliSeconds/1000,
-                deviceAction.device,  #the device ID number defines priority
-                deviceAction.method,
-                kwargs=deviceAction.kwargs))
+            if deviceAction is not None:
+                if deviceAction.time < 0 :  #this is a cleanup action, time is ignored, the sequence of the cleanup actions is not defined
+                    self.cleanupEventList.append({
+                        'device': deviceAction.device,  #the device ID number defines priority
+                        'method':deviceAction.method,
+                        'kwargs':deviceAction.kwargs})
+                else:
+                    self.scheduledEventList.append(self.scheduler.enter(
+                        deviceAction.time + self.startDelayMilliSeconds/1000,
+                        deviceAction.device,  #the device ID number defines priority
+                        deviceAction.method,
+                        kwargs=deviceAction.kwargs))
 
     @staticmethod
     def validateSchedule(scheduleInSimpleFormat) -> bool:
@@ -75,10 +83,15 @@ class FountainShowScheduler():
 
             For full list of device IDs, see boardResources.py.
             For full list of PWM actions, see boardResources.py.
+
+            Lines starting with # are comments and are ignored.
+            Empty lines or lines containing only spaces are ignored.
         """
 
         #IH240126 TODO implement full parser with format error detection
         def convertActionToNative(actionInSimpleFormat: str) -> ScheduledDeviceAction:
+            if actionInSimpleFormat.isspace() or len(actionInSimpleFormat)==0 or actionInSimpleFormat.startswith('#'):
+                return None
             time_str,device_str,method_str,kwargs_str = actionInSimpleFormat.split(",")
             return ScheduledDeviceAction(
                 time=float(time_str),
@@ -107,6 +120,7 @@ class FountainShowScheduler():
             except:
                 pass
         self.scheduledEventList=[]
+        self.cleanupEventList=[]
 
     def empty(self):
         return self.scheduler.empty()
@@ -114,6 +128,10 @@ class FountainShowScheduler():
     def runNonblocking(self):
         self.scheduler.run(blocking=False)  
 
+    def runCleanup(self):
+        #IH240130 TODO implement
+        # run actions from the self.cleanupEventList 
+        pass
 
     @staticmethod
     def DefaultSchedule():
@@ -127,7 +145,10 @@ class FountainShowScheduler():
     def TestSchedule():
         schedule = [
             # device actions with time<0 are used to cleanup after premature sequence finish
-            # (the cleanup actions are executed in ascending order, i.e. -3, then -2, then -1. )
+            # (the sequence of the cleanup actions is not defined)
+
+            # 'None' is allowed in the list
+
             ScheduledDeviceAction(-1,FountainDevice.PUMP1,FountainDevice.pwm_setConstant,kwargs={'pwm_percentage': 0}),
             
             # device action with time=0 is used to initialize the devices
