@@ -23,6 +23,7 @@ import adafruit_requests
 
 from adafruit_httpserver import Server, Request, Response, Route, GET, POST
 from boardResources import boardLED
+from FountainApplicationData import fountainApp
 import FountainShowScheduler
 
 
@@ -54,7 +55,6 @@ class FountainHTTPServer():
         self.ipv4 = ipv4
         self.netmask = netmask
         self.gateway = gateway
-        sefl.version = version
 
         self.debug = debug
         self.server = None
@@ -182,7 +182,7 @@ class FountainHTTPServer():
         font_family = "monospace"
         schedule_text = FountainShowScheduler.FountainShowScheduler.convertScheduleToSimple(
                             FountainShowScheduler.FountainShowScheduler.TestSchedule()) 
-        version = 
+        version = fountainApp['version']
         #IH24012 for debugging only
         # schedule_text += "\n" + str(FountainShowScheduler.FountainShowScheduler.convertScheduleToNative(schedule_text)[0])
         html = f"""

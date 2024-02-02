@@ -21,11 +21,11 @@ from FountainHTTPServer import FountainHTTPServer
 from  FountainShowScheduler import FountainShowScheduler
 from FountainSimulatedRTC import FountainSimulatedRTC
 from boardResources import boardLED, FountainDevice, fountainSimulated, timeResolutionMilliseconds
+from FountainApplicationData import fountainApp
 
 
-fountainApp={
-       "version": "240202a",
-}
+fountainApp['version'] = "240202a"
+
 
 ipv4    =  ipaddress.IPv4Address("192.168.0.110")     #IH231211 "192.168.0.110" works in BA
 # ipv4    =  ipaddress.IPv4Address("192.168.0.195")     #IH231219 "192.168.0.195" works in W
