@@ -4,7 +4,7 @@
 #
 #     The Fountain project
 #    
-#     Last revision: IH240126
+#     Last revision: IH240202
 #
 #
 
@@ -17,17 +17,19 @@ import time
 from adafruit_httpserver import Request, Response
 
 
-
 from FountainHTTPServer import FountainHTTPServer
 from  FountainShowScheduler import FountainShowScheduler
 from FountainSimulatedRTC import FountainSimulatedRTC
 from boardResources import boardLED, FountainDevice, fountainSimulated, timeResolutionMilliseconds
 
 
+fountainApp={
+       "version": "240202a",
+}
 
-# ipv4    =  ipaddress.IPv4Address("192.168.0.110")     #IH231211 "192.168.0.110" works in BA
+ipv4    =  ipaddress.IPv4Address("192.168.0.110")     #IH231211 "192.168.0.110" works in BA
 # ipv4    =  ipaddress.IPv4Address("192.168.0.195")     #IH231219 "192.168.0.195" works in W
-ipv4    =  ipaddress.IPv4Address("192.168.1.30")     #IH231219 "192.168.1.30" works in BV
+# ipv4    =  ipaddress.IPv4Address("192.168.1.30")     #IH231219 "192.168.1.30" works in BV
 
 netmask =  ipaddress.IPv4Address("255.255.255.0")     #IH231211 works in BA, W, BV
 gateway =  ipaddress.IPv4Address("192.168.0.1")       #IH231211 works in BA, W, BV
@@ -42,6 +44,7 @@ fountainHTTPServer = FountainHTTPServer(
         ipv4,
         netmask,
         gateway,
+        fountainApp['version'],
         debug=True)
 
 # IH240122 PROBLEM HERE this does not work 
@@ -115,7 +118,7 @@ while True:
         if loopEnabled and fountainGlobalScheduler.empty():
                 # schedule next Show
                 nextScheduledTime = time.time() + 10  #IH240124 TODO the time daly between shows to be set from HTTP server 
-                print(f'fountainGlobalScheduler: next show scheduled to T+{timeToHMS(nextScheduledTime-timeAtStart)} (current time is {timeToHMS(time.time())})')
+                print(f'fountainGlobalScheduler: next show scheduled to T+{timeToHMS(nextScheduledTime-timeAtStart)} (current time is T+{timeToHMS(time.time()-timeAtStart)})')
                 # print(f'current NTP time is {fountainHTTPServer.getNTPdatetime()}') #IH240111 does not work due to disabled port 123
                 fountainGlobalScheduler.enterabs(nextScheduledTime,1,runShow,kwargs={'showSchedule':currentSchedule})
                 # runShow may leave a commandFromWebClient pending

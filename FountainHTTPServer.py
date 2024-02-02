@@ -1,7 +1,7 @@
 #
 #    f o u n t a i n   H T T P   S e r v e r . p y 
 #
-#    Last revision: IH240124
+#    Last revision: IH240202
 #
 #
 #    based on 
@@ -46,6 +46,7 @@ class FountainHTTPServer():
                 ipv4,
                 netmask,
                 gateway,
+                version,
                 debug=True) -> None:
 
         self.wifi_ssid = wifi_ssid
@@ -53,6 +54,7 @@ class FountainHTTPServer():
         self.ipv4 = ipv4
         self.netmask = netmask
         self.gateway = gateway
+        sefl.version = version
 
         self.debug = debug
         self.server = None
@@ -180,6 +182,7 @@ class FountainHTTPServer():
         font_family = "monospace"
         schedule_text = FountainShowScheduler.FountainShowScheduler.convertScheduleToSimple(
                             FountainShowScheduler.FountainShowScheduler.TestSchedule()) 
+        version = 
         #IH24012 for debugging only
         # schedule_text += "\n" + str(FountainShowScheduler.FountainShowScheduler.convertScheduleToNative(schedule_text)[0])
         html = f"""
@@ -285,7 +288,7 @@ class FountainHTTPServer():
 
         <body>
         <title>Fountain HTTP Server</title>
-        <h1>Fountain HTTP Server</h1>
+        <h1>Fountain HTTP Server Ver.{version}</h1>
         
     
         
