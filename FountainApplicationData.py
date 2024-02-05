@@ -1,9 +1,15 @@
 #
 #    f o u n t a i n   A p p l i c a t i o n   D a t a . p y 
 #
-#    Last revision: IH240202
+#    Last revision: IH240205
 #
 
 fountainApp={
-       "version": "240202a",
+       "version": "", # has to be assigned in the main.py
+       "currentSchedule": [],
+       "verboseLevel": 1
 }
+
+def debugPrint(debugLevel,s):
+    if fountainApp["verboseLevel"]>=debugLevel:
+        print(s)

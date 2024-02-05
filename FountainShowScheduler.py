@@ -1,7 +1,7 @@
 #
 #    f o u n t a i n   S h o w   S c h e d u l e r . p y 
 #
-#    Last revision: IH240130
+#    Last revision: IH240205
 
 import sched
 import time
@@ -129,9 +129,9 @@ class FountainShowScheduler():
         self.scheduler.run(blocking=False)  
 
     def runCleanup(self):
-        #IH240130 TODO implement
         # run actions from the self.cleanupEventList 
-        pass
+        for cleanUpEvent in self.cleanupEventList:
+            cleanUpEvent['method'](cleanUpEvent['device'],**cleanUpEvent['kwargs'])
 
     @staticmethod
     def DefaultSchedule():

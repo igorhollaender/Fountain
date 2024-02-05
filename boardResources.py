@@ -7,6 +7,7 @@
 
 import board
 from digitalio import DigitalInOut, Direction
+from FountainApplicationData import debugPrint
 
 # --- simulation
 
@@ -67,7 +68,7 @@ class FountainDevice():
         if getSimpleFormatID:
             return "CONST"
         if fountainSimulated:
-            print(f"Device {device}: pwm set to {pwm_percentage} percent")
+            debugPrint(2,f"Device {device}: pwm set to {pwm_percentage} percent")
             boardLED.value = (pwm_percentage>50)
             return
         else:

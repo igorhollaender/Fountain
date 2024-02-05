@@ -1,7 +1,7 @@
 #
 #    f o u n t a i n   H T T P   S e r v e r . p y 
 #
-#    Last revision: IH240202
+#    Last revision: IH240205
 #
 #
 #    based on 
@@ -23,7 +23,7 @@ import adafruit_requests
 
 from adafruit_httpserver import Server, Request, Response, Route, GET, POST
 from boardResources import boardLED
-from FountainApplicationData import fountainApp
+from FountainApplicationData import fountainApp, debugPrint
 import FountainShowScheduler
 
 
@@ -64,10 +64,10 @@ class FountainHTTPServer():
     def Start(self):
         
         #  connect to network
-        print()
-        print("Connecting to WiFi")
-        print(f"SSID:     {self.wifi_ssid}")
-        print(f"Password: {self.wifi_password}")
+        debugPrint(2,"")
+        debugPrint(2,"Connecting to WiFi")
+        debugPrint(2,f"SSID:     {self.wifi_ssid}")
+        debugPrint(2,f"Password: {self.wifi_password}")
 
         #  set static IP address
         wifi.radio.set_ipv4_address(ipv4=self.ipv4,netmask=self.netmask,gateway=self.gateway)
@@ -75,7 +75,7 @@ class FountainHTTPServer():
         #  connect to your SSID
         wifi.radio.connect(self.wifi_ssid, self.wifi_password)
 
-        print("Connected to WiFi")
+        debugPrint(2,"Connected to WiFi")
         self.pool = socketpool.SocketPool(wifi.radio)
         self.server = Server(self.pool, "/static", debug=self.debug)
      
@@ -89,15 +89,15 @@ class FountainHTTPServer():
         ])
         
 
-        print("starting server..")
+        debugPrint(2,"starting server..")
         # startup the server
         try:
             self.server.start(str(wifi.radio.ipv4_address))
-            print("Listening on http://%s:80" % wifi.radio.ipv4_address)
+            debugPrint(1,"Listening on http://%s:80" % wifi.radio.ipv4_address)
         #  if the server fails to begin, restart 
         except OSError:
             time.sleep(5)
-            print("restarting..")
+            debugPrint(1,"restarting..")
             microcontroller.reset() 
 
             
@@ -151,7 +151,7 @@ class FountainHTTPServer():
         #  print(f'raw_text is "{raw_text}"')
 
         form_data = request.form_data
-        print(f'form data is "{form_data}"')
+        debugPrint(2,f'form data is "{form_data}"')
 
         # for debugging
         #  if the led on button was pressed
@@ -180,8 +180,7 @@ class FountainHTTPServer():
     @staticmethod
     def Webpage():
         font_family = "monospace"
-        schedule_text = FountainShowScheduler.FountainShowScheduler.convertScheduleToSimple(
-                            FountainShowScheduler.FountainShowScheduler.TestSchedule()) 
+        schedule_text = fountainApp['currentSchedule'] # IH240205 TODO this has to be converted to string 
         version = fountainApp['version']
         #IH24012 for debugging only
         # schedule_text += "\n" + str(FountainShowScheduler.FountainShowScheduler.convertScheduleToNative(schedule_text)[0])
