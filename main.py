@@ -20,7 +20,7 @@ from adafruit_httpserver import Request, Response
 from FountainHTTPServer import FountainHTTPServer
 from  FountainShowScheduler import FountainShowScheduler
 from FountainSimulatedRTC import FountainSimulatedRTC
-from boardResources import boardLED, FountainDevice, fountainSimulated, timeResolutionMilliseconds
+from boardResources import boardLED, FountainDeviceCollection, fountainSimulated, timeResolutionMilliseconds
 from FountainApplicationData import fountainApp, debugPrint
 
 
@@ -36,7 +36,7 @@ netmask =  ipaddress.IPv4Address("255.255.255.0")     #IH231211 works in BA, W, 
 gateway =  ipaddress.IPv4Address("192.168.0.1")       #IH231211 works in BA, W, BV
 
 
-fountainDevice = FountainDevice()
+fountainDevice = FountainDeviceCollection()
 debugPrint(1,f"Verbose level {fountainApp["verboseLevel"]}")
 
     

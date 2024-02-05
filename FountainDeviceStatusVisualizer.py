@@ -3,15 +3,28 @@
 #
 #    Last revision: IH240205
 
+from boardResources import FountainDeviceCollection
 
 class FountainDeviceStatusVisualizer():
 
     def __init__(
-                self, 
-                showSchedule,
-                startDelayMilliSeconds=0,
-                debug=True) -> None:
+                self,
+                visualizeLevel  # 0 is 'no printing'
+                ) -> None:
+        self.visualizeLevel = visualizeLevel
 
+    def visualizerPrint(self,s) -> None:
+        if self.visualizeLevel>0:
+            print(s)
+
+    def showStatusAll(self) -> None:
+        for device in FountainDeviceCollection.DeviceSimpleFormat:
+            show
         pass
 
-    def setSchedule(self,schedule):
+    @staticmethod
+    def IntensityBarString(percentage) -> str:
+        return '|||||||||||||||||||||||||||||||||||||||||||'
+        
+    def showDeviceStatus(self, device):
+        visualizerPrint (f'{FountainDeviceCollection.DeviceSimpleFormat[device]}: {FountainDeviceStatusVisualizer.IntensityBarString(device)}')

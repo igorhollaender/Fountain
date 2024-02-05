@@ -1,13 +1,13 @@
 #
 #    b o a r d    R e s o u r c e s  . p y 
 #
-#    Last revision: IH240126
+#    Last revision: IH240205
 #
 #
 
 import board
 from digitalio import DigitalInOut, Direction
-from FountainApplicationData import debugPrint
+from FountainApplicationData import fountainApp, debugPrint
 
 # --- simulation
 
@@ -24,11 +24,65 @@ boardLED = DigitalInOut(board.LED)
 boardLED.direction = Direction.OUTPUT
 boardLED.value = False
 
-
 # --- Fountain specific resources
 
-#IH231219 CircuitPython does not have an enum class
-class FountainDevice():
+class FountainDevice:
+
+    # device classes
+    DEVICE_CLASS_PUMP = 1
+    DEVICE_CLASS_LED = 2
+    
+    def __init__(self,deviceClass,nativeFormatID,simpleFormatID) -> None:
+        self.deviceClass = deviceClass,
+        self.nativeFormatID = nativeFormatID
+        self.simpleFormatID = simpleFormatID
+        self.state={
+            'percentageValue': 0,
+        } 
+    
+    def setState(self,stateParameter,stateValue):
+        self.state[stateParameter]=stateValue
+
+    def getState(self,stateParameter):
+        return self.state[stateParameter]
+    
+    def getSimpleFormatID(self) -> str:
+        return self.simpleFormatID
+
+    def getNativeFormatID(self) -> int:
+        return self.nativeFormatID
+    
+    def pwm_setConstant(self, pwm_percentage=100, getSimpleFormatID=False):
+        global fountainSimulated
+        #IH231219 TODO
+        if getSimpleFormatID:
+            return "CONST"
+        self.setState["percentageValue",pwm_percentage]
+        if fountainApp["simulated"]:
+            debugPrint(2,f"Device {self.getSimpleFormatID()}: pwm set to {pwm_percentage} percent")
+            boardLED.value = (pwm_percentage>50)
+            return
+        else:
+            pass
+        pass
+
+    def pwm_setLinearRamp(self, pwm_percentage_begin=0, pwm_percentage_end=100, totalDuration=1, numberOfSteps=10, getSimpleFormatID=False):
+        """
+        Use to schedule pwm setup steps for linear ramp.
+        totalDuration    is given in general time units
+        numberOfSteps    includes the beginning and end steps
+        """
+        if getSimpleFormatID:
+            return "LINRAMP"
+        #IH231219 TODO  
+        pass
+
+
+
+# IH240205 TODO implement FountainDevice as a class for a *single device*, then
+# implement a collection of devices 
+
+class FountainDeviceCollection():
 
     # the ID number of the device also specifies its priority when scheduling actions
     # device with ID 0 is reserved
@@ -45,20 +99,32 @@ class FountainDevice():
             LED1:"LED1",
             LED2:"LED2",
             }
+    
     #IH240126 HACK Dangereous!
     def DeviceNativeFormat(device_str): #inversed DeviceSimpleFormat dictionary
-        return list(FountainDevice.DeviceSimpleFormat.keys())[list(FountainDevice.DeviceSimpleFormat.values()).index(device_str)]
+        return list(FountainDeviceCollection.DeviceSimpleFormat.keys())[list(FountainDeviceCollection.DeviceSimpleFormat.values()).index(device_str)]
     
     def __init__(self) -> None:
-        # print (fountainSimulated)
-        pass
+        self.deviceList = [
+            FountainDevice(FountainDevice.DEVICE_CLASS_PUMP, 1,'PUMP1'),
+            FountainDevice(FountainDevice.DEVICE_CLASS_PUMP, 2,'PUMP2'),
+            FountainDevice(FountainDevice.DEVICE_CLASS_LED, 3,'LED1'),
+            FountainDevice(FountainDevice.DEVICE_CLASS_LED, 4,'LED2'),
+        ]
+
+        # set all devices to 'idle' state
+        for device in self.deviceList:
+            if device.deviceClass == FountainDevice.DEVICE_CLASS_PUMP:
+                device.pwm_setConstant(0)
+            if device.deviceClass == FountainDevice.DEVICE_CLASS_LED:
+                device.pwm_setConstant(0)
         
     # hardware control methods
     #IH240126 TODO  implement in a more elegant way
     def MethodNativeFormat(method_simpleFormatID):
         for method in [
-                FountainDevice.pwm_setConstant,
-                FountainDevice.pwm_setLinearRamp]:
+                FountainDeviceCollection.pwm_setConstant,
+                FountainDeviceCollection.pwm_setLinearRamp]:
             if method(getSimpleFormatID=True)==method_simpleFormatID:
                 return method
 

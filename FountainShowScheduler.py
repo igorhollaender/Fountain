@@ -7,7 +7,7 @@ import sched
 import time
 from collections import namedtuple
 
-from boardResources import FountainDevice
+from boardResources import FountainDeviceCollection
 
 
 ScheduledDeviceAction = namedtuple('ScheduledDeviceAction', 'time device method kwargs')
@@ -62,7 +62,7 @@ class FountainShowScheduler():
         def convertActionToSimple(actionInNativeFormat: ScheduledDeviceAction) -> str:
             actionInSimpleFormat = ""
             actionInSimpleFormat += str(actionInNativeFormat.time) + ','
-            actionInSimpleFormat += FountainDevice.DeviceSimpleFormat[actionInNativeFormat.device] + ','
+            actionInSimpleFormat += FountainDeviceCollection.DeviceSimpleFormat[actionInNativeFormat.device] + ','
             actionInSimpleFormat += actionInNativeFormat.method(getSimpleFormatID=True) + ','
             actionInSimpleFormat += str(actionInNativeFormat.kwargs) #IH240126 TODO find a more elegant stringifying for this
             
@@ -95,8 +95,8 @@ class FountainShowScheduler():
             time_str,device_str,method_str,kwargs_str = actionInSimpleFormat.split(",")
             return ScheduledDeviceAction(
                 time=float(time_str),
-                device = FountainDevice.DeviceNativeFormat(device_str),
-                method = FountainDevice.MethodNativeFormat(method_str),
+                device = FountainDeviceCollection.DeviceNativeFormat(device_str),
+                method = FountainDeviceCollection.MethodNativeFormat(method_str),
                 kwargs = eval(kwargs_str)
             )
         error="OK"
@@ -137,7 +137,7 @@ class FountainShowScheduler():
     def DefaultSchedule():
         schedule = [
              # setting all devices to idle
-            ScheduledDeviceAction(0,FountainDevice.PUMP1,FountainDevice.pwm_setConstant,kwargs={'pwm_percentage': 0}),
+            ScheduledDeviceAction(0,FountainDeviceCollection.PUMP1,FountainDeviceCollection.pwm_setConstant,kwargs={'pwm_percentage': 0}),
         ]
         return schedule
     
@@ -149,14 +149,14 @@ class FountainShowScheduler():
 
             # 'None' is allowed in the list
 
-            ScheduledDeviceAction(-1,FountainDevice.PUMP1,FountainDevice.pwm_setConstant,kwargs={'pwm_percentage': 0}),
+            ScheduledDeviceAction(-1,FountainDeviceCollection.PUMP1,FountainDeviceCollection.pwm_setConstant,kwargs={'pwm_percentage': 0}),
             
             # device action with time=0 is used to initialize the devices
 
-            ScheduledDeviceAction(1.0,FountainDevice.PUMP1,FountainDevice.pwm_setConstant,kwargs={'pwm_percentage': 0}),
-            ScheduledDeviceAction(3.0,FountainDevice.PUMP2,FountainDevice.pwm_setConstant,kwargs={'pwm_percentage': 100}),
-            ScheduledDeviceAction(5.0,FountainDevice.PUMP1,FountainDevice.pwm_setConstant,kwargs={'pwm_percentage': 0}),
-            ScheduledDeviceAction(7.0,FountainDevice.PUMP2,FountainDevice.pwm_setConstant,kwargs={'pwm_percentage': 100}),
-            ScheduledDeviceAction(8.0,FountainDevice.LED1,FountainDevice.pwm_setConstant,kwargs={'pwm_percentage': 0}),
+            ScheduledDeviceAction(1.0,FountainDeviceCollection.PUMP1,FountainDeviceCollection.pwm_setConstant,kwargs={'pwm_percentage': 0}),
+            ScheduledDeviceAction(3.0,FountainDeviceCollection.PUMP2,FountainDeviceCollection.pwm_setConstant,kwargs={'pwm_percentage': 100}),
+            ScheduledDeviceAction(5.0,FountainDeviceCollection.PUMP1,FountainDeviceCollection.pwm_setConstant,kwargs={'pwm_percentage': 0}),
+            ScheduledDeviceAction(7.0,FountainDeviceCollection.PUMP2,FountainDeviceCollection.pwm_setConstant,kwargs={'pwm_percentage': 100}),
+            ScheduledDeviceAction(8.0,FountainDeviceCollection.LED1,FountainDeviceCollection.pwm_setConstant,kwargs={'pwm_percentage': 0}),
         ]
         return schedule

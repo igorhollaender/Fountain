@@ -7,9 +7,11 @@
 fountainApp={
        "version": "", # has to be assigned in the main.py
        "currentSchedule": [],
-       "verboseLevel": 1
+       "verboseLevel": 1,
+       "simulated": True,
 }
 
 def debugPrint(debugLevel,s):
     if fountainApp["verboseLevel"]>=debugLevel:
         print(s)
+    
