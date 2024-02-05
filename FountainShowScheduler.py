@@ -144,7 +144,7 @@ class FountainShowScheduler():
     @staticmethod
     def TestSchedule():
         schedule = [
-            # device actions with time<0 are used to cleanup after premature sequence finish
+            # device actions with time<0 are used to cleanup after (premature) sequence finish
             # (the sequence of the cleanup actions is not defined)
 
             # 'None' is allowed in the list
@@ -153,10 +153,10 @@ class FountainShowScheduler():
             
             # device action with time=0 is used to initialize the devices
 
-            ScheduledDeviceAction(1.0,FountainDeviceCollection.PUMP1,FountainDeviceCollection.pwm_setConstant,kwargs={'pwm_percentage': 0}),
-            ScheduledDeviceAction(3.0,FountainDeviceCollection.PUMP2,FountainDeviceCollection.pwm_setConstant,kwargs={'pwm_percentage': 100}),
-            ScheduledDeviceAction(5.0,FountainDeviceCollection.PUMP1,FountainDeviceCollection.pwm_setConstant,kwargs={'pwm_percentage': 0}),
-            ScheduledDeviceAction(7.0,FountainDeviceCollection.PUMP2,FountainDeviceCollection.pwm_setConstant,kwargs={'pwm_percentage': 100}),
-            ScheduledDeviceAction(8.0,FountainDeviceCollection.LED1,FountainDeviceCollection.pwm_setConstant,kwargs={'pwm_percentage': 0}),
+            ScheduledDeviceAction(1.0,FountainDeviceCollection.PUMP1,FountainDeviceCollection.pwm_setConstant_NEW,kwargs={'pwm_percentage': 0}),
+            ScheduledDeviceAction(3.0,FountainDeviceCollection.PUMP2,FountainDeviceCollection.pwm_setConstant_NEW,kwargs={'pwm_percentage': 100}),
+            ScheduledDeviceAction(5.0,FountainDeviceCollection.PUMP1,FountainDeviceCollection.pwm_setConstant_NEW,kwargs={'pwm_percentage': 0}),
+            ScheduledDeviceAction(7.0,FountainDeviceCollection.PUMP2,FountainDeviceCollection.pwm_setConstant_NEW,kwargs={'pwm_percentage': 100}),
+            ScheduledDeviceAction(8.0,FountainDeviceCollection.LED1,FountainDeviceCollection.pwm_setConstant_NEW,kwargs={'pwm_percentage': 0}),
         ]
         return schedule

@@ -25,7 +25,7 @@ from FountainApplicationData import fountainApp, debugPrint
 
 
 fountainApp["version"] = "240205a"
-fountainApp["verboseLevel"] = 0
+fountainApp["verboseLevel"] = 2
 
 
 # ipv4    =  ipaddress.IPv4Address("192.168.0.110")     #IH231211 "192.168.0.110" works in BA
@@ -36,7 +36,7 @@ netmask =  ipaddress.IPv4Address("255.255.255.0")     #IH231211 works in BA, W, 
 gateway =  ipaddress.IPv4Address("192.168.0.1")       #IH231211 works in BA, W, BV
 
 
-fountainDevice = FountainDeviceCollection()
+fountainDeviceCollection = FountainDeviceCollection()
 debugPrint(1,f"Verbose level {fountainApp["verboseLevel"]}")
 
     

@@ -19,7 +19,7 @@ class FountainDeviceStatusVisualizer():
 
     def showStatusAll(self) -> None:
         for device in FountainDeviceCollection.DeviceSimpleFormat:
-            show
+            self.showDeviceStatus(device)
         pass
 
     @staticmethod
@@ -27,4 +27,4 @@ class FountainDeviceStatusVisualizer():
         return '|||||||||||||||||||||||||||||||||||||||||||'
         
     def showDeviceStatus(self, device):
-        visualizerPrint (f'{FountainDeviceCollection.DeviceSimpleFormat[device]}: {FountainDeviceStatusVisualizer.IntensityBarString(device)}')
+        self.visualizerPrint (f'{FountainDeviceCollection.DeviceSimpleFormat[device]}: {FountainDeviceStatusVisualizer.IntensityBarString(device)}')

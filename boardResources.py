@@ -128,6 +128,13 @@ class FountainDeviceCollection():
             if method(getSimpleFormatID=True)==method_simpleFormatID:
                 return method
 
+    def pwm_setConstant_NEW(self,device=0, pwm_percentage=100, getSimpleFormatID=False):
+        return self.deviceList[device].pwm_setConstant(pwm_percentage,getSimpleFormatID)
+    
+    def pwm_setLinearRamp_NEW(self,device=0, pwm_percentage_begin=0, pwm_percentage_end=100, totalDuration=1, numberOfSteps=10, getSimpleFormatID=False):
+        return self.deviceList[device].pwm_setLinearRamp(pwm_percentage_begin, pwm_percentage_end, totalDuration, numberOfSteps, getSimpleFormatID)
+    
+
     def pwm_setConstant(device=0, pwm_percentage=100, getSimpleFormatID=False):
         global fountainSimulated
         #IH231219 TODO
