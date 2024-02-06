@@ -54,6 +54,9 @@ class FountainDevice:
     
     @staticmethod
     def pwm_setConstant(device=0, pwm_percentage=100, getSimpleFormatID=False):
+        """
+        This method is *static* because it will be used as parameter in the scheduler
+        """
         global fountainSimulated
         #IH231219 TODO
         if getSimpleFormatID:
@@ -72,11 +75,25 @@ class FountainDevice:
         Use to schedule pwm setup steps for linear ramp.
         totalDuration    is given in general time units
         numberOfSteps    includes the beginning and end steps
+        
+        
+        This method is *static* because it will be used as parameter in the scheduler
+        
         """
         if getSimpleFormatID:
             return "LINRAMP"
         #IH231219 TODO  
         pass
+
+    # hardware control methods
+    #IH240126 TODO  implement in a more elegant way
+    def MethodNativeFormat(method_simpleFormatID):
+        for method in [
+                FountainDevice.pwm_setConstant,
+                FountainDevice.pwm_setLinearRamp]:
+            if method(getSimpleFormatID=True)==method_simpleFormatID:
+                return method
+
 
     
     # def pwm_setConstant(self, pwm_percentage=100, getSimpleFormatID=False):
@@ -131,30 +148,33 @@ class FountainDeviceCollection():
     def DeviceNativeFormat(device_str): #inversed DeviceSimpleFormat dictionary
         return list(FountainDeviceCollection.DeviceSimpleFormat.keys())[list(FountainDeviceCollection.DeviceSimpleFormat.values()).index(device_str)]
     
+    def DeviceNativeFormat_NEW(self,device_str):
+        for d in self.deviceList:
+            if d.getSimpleFormatID==device_str:
+                return d.getNativeFormatID
+            
+    def DeviceSimpleFormat_NEW(self,device):
+        for d in self.deviceList:
+            if d.getNativeFormatID==device:
+                return d.getSimpleFormatID
+            
     def __init__(self) -> None:
         self.deviceList = [
-            FountainDevice(FountainDevice.DEVICE_CLASS_PUMP, 1,'PUMP1'),
-            FountainDevice(FountainDevice.DEVICE_CLASS_PUMP, 2,'PUMP2'),
-            FountainDevice(FountainDevice.DEVICE_CLASS_LED, 3,'LED1'),
-            FountainDevice(FountainDevice.DEVICE_CLASS_LED, 4,'LED2'),
+            FountainDevice(FountainDevice.DEVICE_CLASS_PUMP, FountainDeviceCollection.PUMP1,'PUMP1'),
+            FountainDevice(FountainDevice.DEVICE_CLASS_PUMP, FountainDeviceCollection.PUMP2,'PUMP2'),
+            FountainDevice(FountainDevice.DEVICE_CLASS_LED, FountainDeviceCollection.LED1,'LED1'),
+            FountainDevice(FountainDevice.DEVICE_CLASS_LED, FountainDeviceCollection.LED2,'LED2'),
         ]
+            
 
         # set all devices to 'idle' state
         for device in self.deviceList:
             if device.deviceClass == FountainDevice.DEVICE_CLASS_PUMP:
-                device.pwm_setConstant(0)
+                FountainDevice.pwm_setConstant(device,pwm_percentage=0)
             if device.deviceClass == FountainDevice.DEVICE_CLASS_LED:
-                device.pwm_setConstant(0)
+                FountainDevice.pwm_setConstant(device,pwm_percentage=0)
         
-    # hardware control methods
-    #IH240126 TODO  implement in a more elegant way
-    def MethodNativeFormat(method_simpleFormatID):
-        for method in [
-                FountainDevice.pwm_setConstant,
-                FountainDevice.pwm_setLinearRamp]:
-            if method(getSimpleFormatID=True)==method_simpleFormatID:
-                return method
-
+    
     # def pwm_setConstant_NEW(self,device=0, pwm_percentage=100, getSimpleFormatID=False):
     #     return self.deviceList[device].pwm_setConstant(pwm_percentage,getSimpleFormatID)
     
