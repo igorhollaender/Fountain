@@ -4,7 +4,7 @@
 #
 #     The Fountain project
 #    
-#     Last revision: IH240205
+#     Last revision: IH240206
 #
 #
 
@@ -24,9 +24,10 @@ from boardResources import boardLED, FountainDeviceCollection, fountainSimulated
 from FountainApplicationData import fountainApp, debugPrint
 
 
+fountainDeviceCollection = FountainDeviceCollection()
 fountainApp["version"] = "240205a"
 fountainApp["verboseLevel"] = 2
-
+fountainApp["fountainDeviceCollection"] = fountainDeviceCollection
 
 # ipv4    =  ipaddress.IPv4Address("192.168.0.110")     #IH231211 "192.168.0.110" works in BA
 # ipv4    =  ipaddress.IPv4Address("192.168.0.195")     #IH231219 "192.168.0.195" works in W
@@ -36,7 +37,7 @@ netmask =  ipaddress.IPv4Address("255.255.255.0")     #IH231211 works in BA, W, 
 gateway =  ipaddress.IPv4Address("192.168.0.1")       #IH231211 works in BA, W, BV
 
 
-fountainDeviceCollection = FountainDeviceCollection()
+
 debugPrint(1,f"Verbose level {fountainApp["verboseLevel"]}")
 
     

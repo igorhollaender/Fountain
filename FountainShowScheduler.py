@@ -8,6 +8,7 @@ import time
 from collections import namedtuple
 
 from boardResources import FountainDevice, FountainDeviceCollection
+from FountainApplicationData import fountainApp
 
 
 ScheduledDeviceAction = namedtuple('ScheduledDeviceAction', 'time device method kwargs')
@@ -62,7 +63,7 @@ class FountainShowScheduler():
         def convertActionToSimple(actionInNativeFormat: ScheduledDeviceAction) -> str:
             actionInSimpleFormat = ""
             actionInSimpleFormat += str(actionInNativeFormat.time) + ','
-            actionInSimpleFormat += FountainDeviceCollection.DeviceSimpleFormat[actionInNativeFormat.device] + ','
+            actionInSimpleFormat += fountainApp["fountainDeviceCollection"].DeviceSimpleFormat_NEW(actionInNativeFormat.device) + ','
             actionInSimpleFormat += actionInNativeFormat.method(getSimpleFormatID=True) + ','
             actionInSimpleFormat += str(actionInNativeFormat.kwargs) #IH240126 TODO find a more elegant stringifying for this
             
@@ -95,7 +96,7 @@ class FountainShowScheduler():
             time_str,device_str,method_str,kwargs_str = actionInSimpleFormat.split(",")
             return ScheduledDeviceAction(
                 time=float(time_str),
-                device = FountainDeviceCollection.DeviceNativeFormat(device_str),
+                device = FountainDeviceCollection.DeviceNativeFormat_NEW(device_str),
                 method = FountainDeviceCollection.MethodNativeFormat(method_str),
                 kwargs = eval(kwargs_str)
             )

@@ -137,7 +137,7 @@ class FountainDeviceCollection():
     LED2    = 4
 
     #IH240124 TODO  implement in a more elegant way
-    DeviceSimpleFormat = {
+    DeviceSimpleFormat_OLD = {
             PUMP1:"PUMP1",
             PUMP2:"PUMP2",
             LED1:"LED1",
@@ -145,7 +145,7 @@ class FountainDeviceCollection():
             }
     
     #IH240126 HACK Dangereous!
-    def DeviceNativeFormat(device_str): #inversed DeviceSimpleFormat dictionary
+    def DeviceNativeFormat_OLD(device_str): #inversed DeviceSimpleFormat dictionary
         return list(FountainDeviceCollection.DeviceSimpleFormat.keys())[list(FountainDeviceCollection.DeviceSimpleFormat.values()).index(device_str)]
     
     def DeviceNativeFormat_NEW(self,device_str):
