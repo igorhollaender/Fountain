@@ -1,13 +1,13 @@
 #
 #    f o u n t a i n   S h o w   S c h e d u l e r . p y 
 #
-#    Last revision: IH240205
+#    Last revision: IH240206
 
 import sched
 import time
 from collections import namedtuple
 
-from boardResources import FountainDeviceCollection
+from boardResources import FountainDevice, FountainDeviceCollection
 
 
 ScheduledDeviceAction = namedtuple('ScheduledDeviceAction', 'time device method kwargs')
@@ -149,14 +149,14 @@ class FountainShowScheduler():
 
             # 'None' is allowed in the list
 
-            ScheduledDeviceAction(-1,FountainDeviceCollection.PUMP1,FountainDeviceCollection.pwm_setConstant,kwargs={'pwm_percentage': 0}),
+            ScheduledDeviceAction(-1,FountainDeviceCollection.PUMP1,FountainDevice.pwm_setConstant,kwargs={'pwm_percentage': 0}),
             
             # device action with time=0 is used to initialize the devices
 
-            ScheduledDeviceAction(1.0,FountainDeviceCollection.PUMP1,FountainDeviceCollection.pwm_setConstant_NEW,kwargs={'pwm_percentage': 0}),
-            ScheduledDeviceAction(3.0,FountainDeviceCollection.PUMP2,FountainDeviceCollection.pwm_setConstant_NEW,kwargs={'pwm_percentage': 100}),
-            ScheduledDeviceAction(5.0,FountainDeviceCollection.PUMP1,FountainDeviceCollection.pwm_setConstant_NEW,kwargs={'pwm_percentage': 0}),
-            ScheduledDeviceAction(7.0,FountainDeviceCollection.PUMP2,FountainDeviceCollection.pwm_setConstant_NEW,kwargs={'pwm_percentage': 100}),
-            ScheduledDeviceAction(8.0,FountainDeviceCollection.LED1,FountainDeviceCollection.pwm_setConstant_NEW,kwargs={'pwm_percentage': 0}),
+            ScheduledDeviceAction(1.0,FountainDeviceCollection.PUMP1,FountainDevice.pwm_setConstant,kwargs={'pwm_percentage': 0}),
+            ScheduledDeviceAction(3.0,FountainDeviceCollection.PUMP2,FountainDevice.pwm_setConstant,kwargs={'pwm_percentage': 100}),
+            ScheduledDeviceAction(5.0,FountainDeviceCollection.PUMP1,FountainDevice.pwm_setConstant,kwargs={'pwm_percentage': 0}),
+            ScheduledDeviceAction(7.0,FountainDeviceCollection.PUMP2,FountainDevice.pwm_setConstant,kwargs={'pwm_percentage': 100}),
+            ScheduledDeviceAction(8.0,FountainDeviceCollection.LED1,FountainDevice.pwm_setConstant,kwargs={'pwm_percentage': 0}),
         ]
         return schedule
