@@ -49,6 +49,7 @@ class FountainDevice:
     def getNativeFormatID(self) -> int:
         return self.nativeFormatID
     
+
     @staticmethod
     def pwm_setConstant(device=0, pwm_percentage=100, getSimpleFormatID=False):
         """
@@ -83,6 +84,7 @@ class FountainDevice:
 
     # hardware control methods
     #IH240126 TODO  implement in a more elegant way
+    @staticmethod
     def MethodNativeFormat(method_simpleFormatID):
         for method in [
                 FountainDevice.pwm_setConstant,
@@ -139,6 +141,30 @@ class FountainDeviceCollection():
             FountainDevice(FountainDevice.DEVICE_CLASS_LED, FountainDeviceCollection.LED1,'LED1'),
             FountainDevice(FountainDevice.DEVICE_CLASS_LED, FountainDeviceCollection.LED2,'LED2'),
         ]
+            
+        # set all devices to 'idle' state
+        for device in self.deviceList:
+            if device.deviceClass == FountainDevice.DEVICE_CLASS_PUMP:
+                FountainDevice.pwm_setConstant(device,pwm_percentage=0)
+            if device.deviceClass == FountainDevice.DEVICE_CLASS_LED:
+                FountainDevice.pwm_setConstant(device,pwm_percentage=0)
+        
+    def getDeviceFromNativeFormatID(self,deviceNativeFormatID)-> FountainDevice:
+        for d in self.deviceList:
+            if d.getNativeFormatID()==deviceNativeFormatID:
+                return d
+    
+    def getDeviceFromSimpleFormatID(self,deviceSimpleFormatID)-> FountainDevice:
+        for d in self.deviceList:
+            if d.getSimpleFormatID()==deviceSimpleFormatID:
+                return d
+    
+    def getSimpleDeviceIDFromNativeDeviceID(self,deviceNativeFormatID) -> str:
+        return self.getDeviceFromNativeFormatID(deviceNativeFormatID).getSimpleFormatID()
+
+    def getNativeDeviceIDFromSimpleDeviceID(self,deviceSimpleFormatID) -> int:
+        return self.getDeviceFromSimpleFormatID(deviceSimpleFormatID).getNativeFormatID()
+
 
     #IH240124 TODO  implement in a more elegant way
     #Ih240207 OBSOLETE
@@ -154,25 +180,21 @@ class FountainDeviceCollection():
     #def DeviceNativeFormat_OLD(device_str): #inversed DeviceSimpleFormat dictionary
     #    return list(FountainDeviceCollection.DeviceSimpleFormat.keys())[list(FountainDeviceCollection.DeviceSimpleFormat.values()).index(device_str)]
     
-    def DeviceNativeFormat(self,device_str) -> int:
-        for d in self.deviceList:
-            if d.getSimpleFormatID==device_str:
-                return d.getNativeFormatID()
+    #IH240207 DEPRECATED 
+    # TODO to be replaced by getNativeDeviceIDFromSimpleDeviceID
+    #def DeviceNativeFormat(self,device_str) -> int:
+    #    for d in self.deviceList:
+    #        if d.getSimpleFormatID==device_str:
+    #            return d.getNativeFormatID()
             
-    def DeviceSimpleFormat(self,device) -> str:
-        for d in self.deviceList:
-            if d.getNativeFormatID()==device:
-                return d.getSimpleFormatID()
+    #IH240207 DEPRECATED 
+    # TODO to be replaced by getSimpleDeviceIDFromNativeDeviceID
+    #def DeviceSimpleFormat(self,device) -> str:
+    #    for d in self.deviceList:
+    #        if d.getNativeFormatID()==device:
+    #            return d.getSimpleFormatID()
             
    
-            
-
-        # set all devices to 'idle' state
-        for device in self.deviceList:
-            if device.deviceClass == FountainDevice.DEVICE_CLASS_PUMP:
-                FountainDevice.pwm_setConstant(device,pwm_percentage=0)
-            if device.deviceClass == FountainDevice.DEVICE_CLASS_LED:
-                FountainDevice.pwm_setConstant(device,pwm_percentage=0)
         
     
     # def pwm_setConstant_NEW(self,device=0, pwm_percentage=100, getSimpleFormatID=False):

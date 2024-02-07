@@ -105,6 +105,7 @@ while True:
         if FountainHTTPServer.commandFromWebClient in [FountainHTTPServer.LOOP_START]:
                 loopEnabled = True 
                 FountainHTTPServer.commandFromWebClient = None
+                debugPrint (2,f'LOOP started at T+{timeToHMS(time.time()-timeAtStart)}')
         if FountainHTTPServer.commandFromWebClient in [FountainHTTPServer.SHOW_SUBMIT_SCHEDULE]:
                 FountainHTTPServer.commandFromWebClient = None
                 debugPrint(2,'fountainGlobalScheduler: new schedule loaded: ')

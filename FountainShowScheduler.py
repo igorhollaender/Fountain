@@ -1,7 +1,7 @@
 #
 #    f o u n t a i n   S h o w   S c h e d u l e r . p y 
 #
-#    Last revision: IH240206
+#    Last revision: IH240207
 
 import sched
 import time
@@ -63,10 +63,9 @@ class FountainShowScheduler():
         def convertActionToSimple(actionInNativeFormat: ScheduledDeviceAction) -> str:
             actionInSimpleFormat = ""
             actionInSimpleFormat += str(actionInNativeFormat.time) + ','
-            actionInSimpleFormat += fountainApp["fountainDeviceCollection"].DeviceSimpleFormat(actionInNativeFormat.device) + ','
+            actionInSimpleFormat += fountainApp["fountainDeviceCollection"].getSimpleDeviceIDFromNativeDeviceID(actionInNativeFormat.device) + ','
             actionInSimpleFormat += actionInNativeFormat.method(getSimpleFormatID=True) + ','
             actionInSimpleFormat += str(actionInNativeFormat.kwargs) #IH240126 TODO find a more elegant stringifying for this
-            
             return actionInSimpleFormat
             
         return "\n".join(map(convertActionToSimple,scheduleInNativeFormat))
@@ -78,7 +77,7 @@ class FountainShowScheduler():
 
          EXAMPLES:
                 line in simple format
-            1.0, PUMP1, CONST, 0
+            1.0, PUMP1, CONST, {'pwm_percentage': 0}
                 is converted to native format
             ScheduledDeviceAction(1.0,FountainDevice.PUMP1,FountainDevice.pwm_setConstant,kwargs={'pwm_percentage': 0})
 
@@ -94,10 +93,11 @@ class FountainShowScheduler():
             if actionInSimpleFormat.isspace() or len(actionInSimpleFormat)==0 or actionInSimpleFormat.startswith('#'):
                 return None
             time_str,device_str,method_str,kwargs_str = actionInSimpleFormat.split(",")
+            thisDevice = fountainApp["fountainDeviceCollection"].getDeviceFromSimpleFormatID(device_str)
             return ScheduledDeviceAction(
                 time=float(time_str),
-                device = FountainDeviceCollection.DeviceNativeFormat(device_str),
-                method = FountainDeviceCollection.MethodNativeFormat(method_str),
+                device = thisDevice,
+                method = thisDevice.MethodNativeFormat(method_str),
                 kwargs = eval(kwargs_str)
             )
         error="OK"
