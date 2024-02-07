@@ -1,7 +1,7 @@
 #
 #    b o a r d    R e s o u r c e s  . p y 
 #
-#    Last revision: IH240206
+#    Last revision: IH240207
 #
 #
 
@@ -9,9 +9,6 @@ import board
 from digitalio import DigitalInOut, Direction
 from FountainApplicationData import fountainApp, debugPrint
 
-# --- simulation
-
-fountainSimulated = True
 
 # --- diverse
 
@@ -57,11 +54,10 @@ class FountainDevice:
         """
         This method is *static* because it will be used as parameter in the scheduler
         """
-        global fountainSimulated
         #IH231219 TODO
         if getSimpleFormatID:
             return "CONST"
-        if fountainSimulated:
+        if fountainApp["simulated"]:
             debugPrint(2,f"Device {device}: pwm set to {pwm_percentage} percent")
             boardLED.value = (pwm_percentage>50)
             return
@@ -136,28 +132,6 @@ class FountainDeviceCollection():
     LED1    = 3
     LED2    = 4
 
-    #IH240124 TODO  implement in a more elegant way
-    DeviceSimpleFormat_OLD = {
-            PUMP1:"PUMP1",
-            PUMP2:"PUMP2",
-            LED1:"LED1",
-            LED2:"LED2",
-            }
-    
-    #IH240126 HACK Dangereous!
-    def DeviceNativeFormat_OLD(device_str): #inversed DeviceSimpleFormat dictionary
-        return list(FountainDeviceCollection.DeviceSimpleFormat.keys())[list(FountainDeviceCollection.DeviceSimpleFormat.values()).index(device_str)]
-    
-    def DeviceNativeFormat_NEW(self,device_str):
-        for d in self.deviceList:
-            if d.getSimpleFormatID==device_str:
-                return d.getNativeFormatID
-            
-    def DeviceSimpleFormat_NEW(self,device):
-        for d in self.deviceList:
-            if d.getNativeFormatID==device:
-                return d.getSimpleFormatID
-            
     def __init__(self) -> None:
         self.deviceList = [
             FountainDevice(FountainDevice.DEVICE_CLASS_PUMP, FountainDeviceCollection.PUMP1,'PUMP1'),
@@ -165,6 +139,32 @@ class FountainDeviceCollection():
             FountainDevice(FountainDevice.DEVICE_CLASS_LED, FountainDeviceCollection.LED1,'LED1'),
             FountainDevice(FountainDevice.DEVICE_CLASS_LED, FountainDeviceCollection.LED2,'LED2'),
         ]
+
+    #IH240124 TODO  implement in a more elegant way
+    #Ih240207 OBSOLETE
+    #DeviceSimpleFormat_OLD = {
+    #        PUMP1:"PUMP1",
+    #        PUMP2:"PUMP2",
+    #        LED1:"LED1",
+    #        LED2:"LED2",
+    #        }
+    
+    #IH240126 HACK Dangereous!
+    #IH2402207 OBSOLETE
+    #def DeviceNativeFormat_OLD(device_str): #inversed DeviceSimpleFormat dictionary
+    #    return list(FountainDeviceCollection.DeviceSimpleFormat.keys())[list(FountainDeviceCollection.DeviceSimpleFormat.values()).index(device_str)]
+    
+    def DeviceNativeFormat(self,device_str) -> int:
+        for d in self.deviceList:
+            if d.getSimpleFormatID==device_str:
+                return d.getNativeFormatID()
+            
+    def DeviceSimpleFormat(self,device) -> str:
+        for d in self.deviceList:
+            if d.getNativeFormatID()==device:
+                return d.getSimpleFormatID()
+            
+   
             
 
         # set all devices to 'idle' state

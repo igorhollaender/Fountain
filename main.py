@@ -4,7 +4,7 @@
 #
 #     The Fountain project
 #    
-#     Last revision: IH240206
+#     Last revision: IH240207
 #
 #
 
@@ -20,13 +20,16 @@ from adafruit_httpserver import Request, Response
 from FountainHTTPServer import FountainHTTPServer
 from  FountainShowScheduler import FountainShowScheduler
 from FountainSimulatedRTC import FountainSimulatedRTC
-from boardResources import boardLED, FountainDeviceCollection, fountainSimulated, timeResolutionMilliseconds
+from boardResources import boardLED, FountainDeviceCollection, timeResolutionMilliseconds
 from FountainApplicationData import fountainApp, debugPrint
 
 
+
+fountainApp["version"]                  = "240207a"
+fountainApp["verboseLevel"]             = 2
+fountainApp["simulated"]                = True
+
 fountainDeviceCollection = FountainDeviceCollection()
-fountainApp["version"] = "240205a"
-fountainApp["verboseLevel"] = 2
 fountainApp["fountainDeviceCollection"] = fountainDeviceCollection
 
 # ipv4    =  ipaddress.IPv4Address("192.168.0.110")     #IH231211 "192.168.0.110" works in BA
