@@ -4,7 +4,7 @@
 #
 #     The Fountain project
 #    
-#     Last revision: IH240207
+#     Last revision: IH240212
 #
 #
 
@@ -25,16 +25,16 @@ from FountainApplicationData import fountainApp, debugPrint
 
 
 
-fountainApp["version"]                  = "240207a"
+fountainApp["version"]                  = "240212a"
 fountainApp["verboseLevel"]             = 2
 fountainApp["simulated"]                = True
 
 fountainDeviceCollection = FountainDeviceCollection()
 fountainApp["fountainDeviceCollection"] = fountainDeviceCollection
 
-# ipv4    =  ipaddress.IPv4Address("192.168.0.110")     #IH231211 "192.168.0.110" works in BA
+ipv4    =  ipaddress.IPv4Address("192.168.0.110")     #IH231211 "192.168.0.110" works in BA
 # ipv4    =  ipaddress.IPv4Address("192.168.0.195")     #IH231219 "192.168.0.195" works in W
-ipv4    =  ipaddress.IPv4Address("192.168.1.30")     #IH231219 "192.168.1.30" works in BV
+# ipv4    =  ipaddress.IPv4Address("192.168.1.30")     #IH231219 "192.168.1.30" works in BV
 
 netmask =  ipaddress.IPv4Address("255.255.255.0")     #IH231211 works in BA, W, BV
 gateway =  ipaddress.IPv4Address("192.168.0.1")       #IH231211 works in BA, W, BV
@@ -120,7 +120,7 @@ while True:
                 fountainApp['currentSchedule']=FountainShowScheduler.convertScheduleToSimple(currentSchedule)
                 loopEnabled = False 
                 fountainGlobalScheduler.cleanSchedule()
-                debugPrint('fountainGlobalScheduler: waiting for LOOP_START command')
+                debugPrint(2,'fountainGlobalScheduler: waiting for LOOP_START command')
         if loopEnabled and fountainGlobalScheduler.empty():
                 # schedule next Show
                 nextScheduledTime = time.time() + 10  #IH240124 TODO the time daly between shows to be set from HTTP server 
