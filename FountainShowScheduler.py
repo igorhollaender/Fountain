@@ -1,7 +1,7 @@
 #
 #    f o u n t a i n   S h o w   S c h e d u l e r . p y 
 #
-#    Last revision: IH240207
+#    Last revision: IH240212
 
 import sched
 import time
@@ -96,7 +96,7 @@ class FountainShowScheduler():
             thisDevice = fountainApp["fountainDeviceCollection"].getDeviceFromSimpleFormatID(device_str)
             return ScheduledDeviceAction(
                 time=float(time_str),
-                device = thisDevice,
+                device = thisDevice.getNativeFormatID(),
                 method = thisDevice.MethodNativeFormat(method_str),
                 kwargs = eval(kwargs_str)
             )
