@@ -1,9 +1,11 @@
 #
 #    F o u n t a i n   D e v i c e   S t a t u s   V i s u a l i z e r . p y 
 #
-#    Last revision: IH240208
+#    Last revision: IH240212
 
+import time
 from boardResources import FountainDeviceCollection
+from FountainApplicationData import fountainApp, timeToHMS
 
 class FountainDeviceStatusVisualizer():
 
@@ -18,8 +20,9 @@ class FountainDeviceStatusVisualizer():
             print(s)
 
     def showStatusAll(self) -> None:
-        self.visualizerPrint(´\n\n\n')
-        for device in FountainDeviceCollection.DeviceSimpleFormat:
+        self.visualizerPrint('\n\n\n')
+        self.visualizerPrint(f'--- Time T+{timeToHMS(time.time()-fountainApp["timeAtStart"])}')
+        for device in fountainApp["fountainDeviceCollection"].deviceList:
             self.showDeviceStatus(device)
         pass
 
@@ -29,7 +32,7 @@ class FountainDeviceStatusVisualizer():
         return 'I'+'|' * int(percentage/100*maxBarLength)
         
     def showDeviceStatus(self, device):
-        self.visualizerPrint (f'{FountainDeviceCollection.DeviceSimpleFormat[device]}: {FountainDeviceStatusVisualizer.IntensityBarString(device)}')
+        self.visualizerPrint (f'{device.getSimpleFormatID()}: {device.getState('percentageValue')}')
         
         
         

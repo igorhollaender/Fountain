@@ -21,12 +21,12 @@ from FountainHTTPServer import FountainHTTPServer
 from  FountainShowScheduler import FountainShowScheduler
 from FountainSimulatedRTC import FountainSimulatedRTC
 from boardResources import boardLED, FountainDeviceCollection, timeResolutionMilliseconds
-from FountainApplicationData import fountainApp, debugPrint
-
+from FountainApplicationData import fountainApp, debugPrint, timeToHMS
+from FountainDeviceStatusVisualizer import FountainDeviceStatusVisualizer
 
 
 fountainApp["version"]                  = "240212a"
-fountainApp["verboseLevel"]             = 2
+fountainApp["verboseLevel"]             = 1  
 fountainApp["simulated"]                = True
 
 fountainDeviceCollection = FountainDeviceCollection()
@@ -42,6 +42,8 @@ gateway =  ipaddress.IPv4Address("192.168.0.1")       #IH231211 works in BA, W, 
 
 
 debugPrint(1,f"Verbose level {fountainApp["verboseLevel"]}")
+fountainDeviceStatusVisualizer = FountainDeviceStatusVisualizer(1)
+fountainApp["fountainDeviceStatusVisualizer"] = fountainDeviceStatusVisualizer
 
     
 fountainHTTPServer = FountainHTTPServer(
@@ -51,7 +53,7 @@ fountainHTTPServer = FountainHTTPServer(
         netmask,
         gateway,
         fountainApp['version'],
-        debug=(True if fountainApp["verboseLevel"]>0 else False))
+        debug=(True if fountainApp["verboseLevel"]>1 else False))
 
 # IH240122 PROBLEM HERE this does not work 
 # fountainSimulatedRTC = FountainSimulatedRTC(
@@ -62,9 +64,10 @@ fountainHTTPServer = FountainHTTPServer(
 
 fountainGlobalScheduler = sched.scheduler(timefunc=time.time)
 fountainHTTPServer.Start()
+fountainApp["timeAtStart"] = time.time()
 
 def runShow(showSchedule=FountainShowScheduler.TestSchedule()):
-        debugPrint (2,f'SHOW started at T+{timeToHMS(time.time()-timeAtStart)}')
+        debugPrint (2,f'SHOW started at T+{timeToHMS(time.time()-fountainApp["timeAtStart"])}')
         fountainShowScheduler  = FountainShowScheduler(
                 showSchedule,
                 startDelayMilliSeconds=1000,
@@ -77,19 +80,15 @@ def runShow(showSchedule=FountainShowScheduler.TestSchedule()):
                                 FountainHTTPServer.SHOW_SUBMIT_SCHEDULE]:
                         fountainShowScheduler.cleanSchedule()    # this effectively breaks the while loop
                 fountainShowScheduler.runNonblocking()
+                fountainDeviceStatusVisualizer.showStatusAll()
                 time.sleep(timeResolutionMilliseconds/1000*2)  #IH240108 heuristic 
         fountainShowScheduler.runCleanup()
-        debugPrint(2,f'SHOW finished at T+{timeToHMS(time.time()-timeAtStart)}')
+        debugPrint(2,f'SHOW finished at T+{timeToHMS(time.time()-fountainApp["timeAtStart"])}')
         # FountainHTTPServer.commandFromWebClient may still contain recently assigned value
         # this will be processed in the higher-level loop
 
-def timeToHMS(timeSeconds):
-        # see https://www.geeksforgeeks.org/python-program-to-convert-seconds-into-hours-minutes-and-seconds/
-        min,sec = divmod(timeSeconds,60)
-        hour,min = divmod(min,60)
-        return '%d:%02d:%02d' % (hour,min,sec)
 
-timeAtStart = time.time()
+
 loopEnabled = True
 currentSchedule = FountainShowScheduler.TestSchedule()
 fountainApp['currentSchedule']=FountainShowScheduler.convertScheduleToSimple(currentSchedule)
@@ -99,13 +98,13 @@ while True:
         if FountainHTTPServer.commandFromWebClient in [FountainHTTPServer.LOOP_STOP]:
                 loopEnabled = False 
                 FountainHTTPServer.commandFromWebClient = None
-                debugPrint (2,f'LOOP stopped at T+{timeToHMS(time.time()-timeAtStart)}')
+                debugPrint (2,f'LOOP stopped at T+{timeToHMS(time.time()-fountainApp["timeAtStart"])}')
         if loopEnabled:
                 fountainGlobalScheduler.run(blocking=False)
         if FountainHTTPServer.commandFromWebClient in [FountainHTTPServer.LOOP_START]:
                 loopEnabled = True 
                 FountainHTTPServer.commandFromWebClient = None
-                debugPrint (2,f'LOOP started at T+{timeToHMS(time.time()-timeAtStart)}')
+                debugPrint (2,f'LOOP started at T+{timeToHMS(time.time()-fountainApp["timeAtStart"])}')
         if FountainHTTPServer.commandFromWebClient in [FountainHTTPServer.SHOW_SUBMIT_SCHEDULE]:
                 FountainHTTPServer.commandFromWebClient = None
                 debugPrint(2,'fountainGlobalScheduler: new schedule loaded: ')
@@ -124,7 +123,7 @@ while True:
         if loopEnabled and fountainGlobalScheduler.empty():
                 # schedule next Show
                 nextScheduledTime = time.time() + 10  #IH240124 TODO the time daly between shows to be set from HTTP server 
-                debugPrint(2,f'fountainGlobalScheduler: next show scheduled to T+{timeToHMS(nextScheduledTime-timeAtStart)} (current time is T+{timeToHMS(time.time()-timeAtStart)})')
+                debugPrint(2,f'fountainGlobalScheduler: next show scheduled to T+{timeToHMS(nextScheduledTime-fountainApp["timeAtStart"])} (current time is T+{timeToHMS(time.time()-fountainApp["timeAtStart"])})')
                 # print(f'current NTP time is {fountainHTTPServer.getNTPdatetime()}') #IH240111 does not work due to disabled port 123
                 fountainGlobalScheduler.enterabs(nextScheduledTime,1,runShow,kwargs={'showSchedule':currentSchedule})
                 # runShow may leave a commandFromWebClient pending
@@ -132,6 +131,7 @@ while True:
                 if FountainHTTPServer.commandFromWebClient in [FountainHTTPServer.SHOW_STOP]:
                        FountainHTTPServer.commandFromWebClient = None
                                   
+        fountainDeviceStatusVisualizer.showStatusAll()                                  
         time.sleep(timeResolutionMilliseconds/1000*2)  #IH240108 heuristic
      
     except Exception as e:
