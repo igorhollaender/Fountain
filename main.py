@@ -26,7 +26,7 @@ from FountainDeviceStatusVisualizer import FountainDeviceStatusVisualizer
 
 
 fountainApp["version"]                  = "240212a"
-fountainApp["verboseLevel"]             = 1  
+fountainApp["verboseLevel"]             = 2 
 fountainApp["simulated"]                = True
 
 fountainDeviceCollection = FountainDeviceCollection()
@@ -42,7 +42,7 @@ gateway =  ipaddress.IPv4Address("192.168.0.1")       #IH231211 works in BA, W, 
 
 
 debugPrint(1,f"Verbose level {fountainApp["verboseLevel"]}")
-fountainDeviceStatusVisualizer = FountainDeviceStatusVisualizer(1)
+fountainDeviceStatusVisualizer = FountainDeviceStatusVisualizer(0)
 fountainApp["fountainDeviceStatusVisualizer"] = fountainDeviceStatusVisualizer
 
     

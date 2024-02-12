@@ -51,7 +51,7 @@ class FountainDevice:
     
 
     @staticmethod
-    def pwm_setConstant(device=0, pwm_percentage=100, getSimpleFormatID=False):
+    def pwm_setConstant(device=1, pwm_percentage=100, getSimpleFormatID=False):
         """
         This method is *static* because it will be used as parameter in the scheduler
         """
@@ -64,10 +64,11 @@ class FountainDevice:
             return
         else:
             pass
-        pass
+        fountainApp["fountainDeviceCollection"].getDeviceFromNativeFormatID(device).setState("percentageValue",pwm_percentage)
+            
 
     @staticmethod
-    def pwm_setLinearRamp(device=0, pwm_percentage_begin=0, pwm_percentage_end=100, totalDuration=1, numberOfSteps=10, getSimpleFormatID=False):
+    def pwm_setLinearRamp(device=1, pwm_percentage_begin=0, pwm_percentage_end=100, totalDuration=1, numberOfSteps=10, getSimpleFormatID=False):
         """
         Use to schedule pwm setup steps for linear ramp.
         totalDuration    is given in general time units

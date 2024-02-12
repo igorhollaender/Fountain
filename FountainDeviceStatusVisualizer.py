@@ -20,20 +20,18 @@ class FountainDeviceStatusVisualizer():
             print(s)
 
     def showStatusAll(self) -> None:
-        self.visualizerPrint('\n\n\n')
-        self.visualizerPrint(f'--- Time T+{timeToHMS(time.time()-fountainApp["timeAtStart"])}')
+        self.visualizerPrint(f'Time T+{timeToHMS(time.time()-fountainApp["timeAtStart"])}')        
         for device in fountainApp["fountainDeviceCollection"].deviceList:
             self.showDeviceStatus(device)
-        pass
 
     @staticmethod
     def IntensityBarString(percentage) -> str:
         maxBarLength = 50
         return 'I'+'|' * int(percentage/100*maxBarLength)
         
-    def showDeviceStatus(self, device):
+    def showDeviceStatus(self, device):        
+        # self.visualizerPrint (f'{device.getSimpleFormatID()}: {FountainDeviceStatusVisualizer.IntensityBarString(device.getState('percentageValue'))}')
         self.visualizerPrint (f'{device.getSimpleFormatID()}: {device.getState('percentageValue')}')
-        
         
         
         
