@@ -1,7 +1,7 @@
 #
 #    b o a r d    R e s o u r c e s  . p y 
 #
-#    Last revision: IH240212
+#    Last revision: IH240213
 #
 #
 
@@ -56,6 +56,7 @@ class FountainDevice:
         This method is *static* because it will be used as parameter in the scheduler
         """
         #IH231219 TODO
+        print(f'PWMC fun: {device},{pwm_percentage}')
         if getSimpleFormatID:
             return "CONST"
         if fountainApp["simulated"]:

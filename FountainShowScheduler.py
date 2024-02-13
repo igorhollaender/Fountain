@@ -80,7 +80,7 @@ class FountainShowScheduler():
                 line in simple format
             1.0, PUMP1, CONST, {'pwm_percentage': 0}
                 is converted to native format
-            ScheduledDeviceAction(1.0,FountainDevice.PUMP1,FountainDevice.pwm_setConstant,kwargs={'pwm_percentage': 0})
+            ScheduledDeviceAction(1.0,FountainDevice.PUMP1,FountainDevice.pwm_setConstant,kwargs={'pwm_percentage': 0, 'device': FountainDevice.PUMP1})
 
             For full list of device IDs, see boardResources.py.
             For full list of PWM actions, see boardResources.py.
@@ -94,34 +94,29 @@ class FountainShowScheduler():
             if actionInSimpleFormat.isspace() or len(actionInSimpleFormat)==0 or actionInSimpleFormat.startswith('#'):
                 return None
             
-            #IH240213 revision, for more items in kwargs
-            # time_str,device_str,method_str,kwargs_str = actionInSimpleFormat.split(",")
             s = actionInSimpleFormat.split(",")
             time_str    = s[0]
             device_str  = s[1]
             method_str  = s[2]
             
-            
             thisDevice = fountainApp["fountainDeviceCollection"].getDeviceFromSimpleFormatID(device_str)
-            print(thisDevice)
             
-            #IH240213 c o n t i n u e    h e r e
-
-            kwargs_str  = ','.join(s[3:],f'"device"={thisDevice.getNativeFormatID()}')  # extend kwargs by 'device'
-            return ScheduledDeviceAction(
+            kwargs_extended = eval(','.join(s[3:]))
+            kwargs_extended["device"] =  thisDevice.getNativeFormatID()
+            s = ScheduledDeviceAction(
                 time=float(time_str),
                 device = thisDevice.getNativeFormatID(),
                 method = thisDevice.MethodNativeFormat(method_str),
-                kwargs = eval(kwargs_str)
-            )            
+                kwargs = kwargs_extended)
+            # print(s)
+            return s                        
         error="OK"
         try:
             scheduleInNativeFormat = [convertActionToNative(actionInSimpleFormat) for actionInSimpleFormat in scheduleInSimpleFormat.split("\n")]
         except Exception as expt:  # if format invalid 
             print (expt)
             scheduleInNativeFormat = ""
-            error="INVALID"
-        print(scheduleInNativeFormat)
+            error="INVALID"        
         return scheduleInNativeFormat,error
    
 
