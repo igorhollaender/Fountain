@@ -25,7 +25,7 @@ from FountainApplicationData import fountainApp, debugPrint, timeToHMS
 from FountainDeviceStatusVisualizer import FountainDeviceStatusVisualizer
 
 
-fountainApp["version"]                  = "240212a"
+fountainApp["version"]                  = "240213a"
 fountainApp["verboseLevel"]             = 2 
 fountainApp["simulated"]                = True
 

@@ -1,7 +1,7 @@
 #
 #    f o u n t a i n   S h o w   S c h e d u l e r . p y 
 #
-#    Last revision: IH240212
+#    Last revision: IH240213
 
 import sched
 import time
@@ -38,15 +38,15 @@ class FountainShowScheduler():
             if deviceAction is not None:
                 if deviceAction.time < 0 :  #this is a cleanup action, time is ignored, the sequence of the cleanup actions is not defined
                     self.cleanupEventList.append({
-                        'device': deviceAction.device,  #the device ID number defines priority
                         'method':deviceAction.method,
-                        'kwargs':deviceAction.kwargs})
+                        'kwargs':deviceAction.kwargs}  #IH240213 kwargs also contain "device"
+                        )
                 else:
                     self.scheduledEventList.append(self.scheduler.enter(
                         deviceAction.time + self.startDelayMilliSeconds/1000,
                         deviceAction.device,  #the device ID number defines priority
                         deviceAction.method,
-                        kwargs=deviceAction.kwargs))
+                        kwargs=deviceAction.kwargs)) #IH240213 kwargs also contain "device" (this is ugly and should be revisited)
 
     @staticmethod
     def validateSchedule(scheduleInSimpleFormat) -> bool:
@@ -61,6 +61,7 @@ class FountainShowScheduler():
         converts the schedule from native format to simple client text format
         """
         def convertActionToSimple(actionInNativeFormat: ScheduledDeviceAction) -> str:
+            actionInNativeFormat.kwargs.pop("device",None)   # remove "device" key if it exists      
             actionInSimpleFormat = ""
             actionInSimpleFormat += str(actionInNativeFormat.time) + ','
             actionInSimpleFormat += fountainApp["fountainDeviceCollection"].getSimpleDeviceIDFromNativeDeviceID(actionInNativeFormat.device) + ','
@@ -92,14 +93,27 @@ class FountainShowScheduler():
         def convertActionToNative(actionInSimpleFormat: str) -> ScheduledDeviceAction:
             if actionInSimpleFormat.isspace() or len(actionInSimpleFormat)==0 or actionInSimpleFormat.startswith('#'):
                 return None
-            time_str,device_str,method_str,kwargs_str = actionInSimpleFormat.split(",")
+            
+            #IH240213 revision, for more items in kwargs
+            # time_str,device_str,method_str,kwargs_str = actionInSimpleFormat.split(",")
+            s = actionInSimpleFormat.split(",")
+            time_str    = s[0]
+            device_str  = s[1]
+            method_str  = s[2]
+            
+            
             thisDevice = fountainApp["fountainDeviceCollection"].getDeviceFromSimpleFormatID(device_str)
+            print(thisDevice)
+            
+            #IH240213 c o n t i n u e    h e r e
+
+            kwargs_str  = ','.join(s[3:],f'"device"={thisDevice.getNativeFormatID()}')  # extend kwargs by 'device'
             return ScheduledDeviceAction(
                 time=float(time_str),
                 device = thisDevice.getNativeFormatID(),
                 method = thisDevice.MethodNativeFormat(method_str),
                 kwargs = eval(kwargs_str)
-            )
+            )            
         error="OK"
         try:
             scheduleInNativeFormat = [convertActionToNative(actionInSimpleFormat) for actionInSimpleFormat in scheduleInSimpleFormat.split("\n")]
@@ -107,6 +121,7 @@ class FountainShowScheduler():
             print (expt)
             scheduleInNativeFormat = ""
             error="INVALID"
+        print(scheduleInNativeFormat)
         return scheduleInNativeFormat,error
    
 
@@ -132,30 +147,18 @@ class FountainShowScheduler():
     def runCleanup(self):
         # run actions from the self.cleanupEventList 
         for cleanUpEvent in self.cleanupEventList:
-            cleanUpEvent['method'](cleanUpEvent['device'],**cleanUpEvent['kwargs'])
+            cleanUpEvent['method'](**cleanUpEvent['kwargs'])
 
     @staticmethod
     def DefaultSchedule():
-        schedule = [
-             # setting all devices to idle
-            ScheduledDeviceAction(0,FountainDeviceCollection.PUMP1,
-                                  FountainDeviceCollection.pwm_setConstant,                                  
-                                  kwargs={'device': FountainDeviceCollection.PUMP1,
-                                          'pwm_percentage': 0}),                                  
-            ScheduledDeviceAction(0,FountainDeviceCollection.PUMP2,
-                                  FountainDeviceCollection.pwm_setConstant,                                  
-                                  kwargs={'device': FountainDeviceCollection.PUMP2,
-                                          'pwm_percentage': 0}),                                                                            
-            
-            ScheduledDeviceAction(0,FountainDeviceCollection.LED1,
-                                  FountainDeviceCollection.pwm_setConstant,                                  
-                                  kwargs={'device': FountainDeviceCollection.LED1,
-                                          'pwm_percentage': 0}),      
-            ScheduledDeviceAction(0,FountainDeviceCollection.LED2,
-                                  FountainDeviceCollection.pwm_setConstant,                                  
-                                  kwargs={'device': FountainDeviceCollection.LED2,
-                                          'pwm_percentage': 0}),                                                                                                                      
-        ]
+        # setting all devices to idle
+
+        # IH240213 TODO review the format to avoid doubled device entry
+        schedule = [ScheduledDeviceAction(0,device.getNativeFormatID(),
+                                  FountainDevice.pwm_setConstant,                                  
+                                  kwargs={'device': device.getNativeFormatID(),
+                                          'pwm_percentage': 0}) 
+                            for device in fountainApp["fountainDeviceCollection"].deviceList]            
         return schedule
     
     @staticmethod
