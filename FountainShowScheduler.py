@@ -64,6 +64,8 @@ class FountainShowScheduler():
         converts the schedule from native format to simple client text format
         """
         def convertActionToSimple(actionInNativeFormat: ScheduledDeviceAction) -> str:
+            if actionInNativeFormat is None:
+                return ""
             actionInNativeFormat.kwargs.pop("device",None)   # remove "device" key if it exists      
             actionInSimpleFormat = ""
             actionInSimpleFormat += str(actionInNativeFormat.time) + ','

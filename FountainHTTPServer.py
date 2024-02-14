@@ -180,7 +180,7 @@ class FountainHTTPServer():
     @staticmethod
     def Webpage():
         font_family = "monospace"
-        schedule_text = FountainShowScheduler.FountainShowScheduler.convertScheduleToSimple(fountainApp['currentScheduleNative']) # IH240205 TODO this has to be converted to string 
+        schedule_text = FountainShowScheduler.FountainShowScheduler.convertScheduleToSimple(fountainApp['currentScheduleNative'])
         version = fountainApp['version']
         #IH24012 for debugging only
         # schedule_text += "\n" + str(FountainShowScheduler.FountainShowScheduler.convertScheduleToNative(schedule_text)[0])

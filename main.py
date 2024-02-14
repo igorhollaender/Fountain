@@ -117,6 +117,9 @@ while True:
                        debugPrint(2,'fountainGlobalScheduler: schedule validation failed. Default schedule loaded.')  
                 loopEnabled = False 
                 fountainGlobalScheduler.cleanSchedule()
+                print('--------------NATIVE READY FOR LOOP -----------')
+                print(fountainApp['currentScheduleNative'])
+                print('-------------------------')
                 debugPrint(2,'fountainGlobalScheduler: waiting for LOOP_START command')
         if loopEnabled and fountainGlobalScheduler.empty():
                 # schedule next Show
@@ -133,6 +136,11 @@ while True:
                        FountainHTTPServer.commandFromWebClient = None
                                   
         fountainDeviceStatusVisualizer.showStatusAll()                                  
+
+        # print('--------------NATIVE between polls-----------')
+        # print(fountainApp['currentScheduleNative'])
+        # print('-------------------------')
+
         time.sleep(timeResolutionMilliseconds/1000*2)  #IH240108 heuristic
      
     except Exception as e:
