@@ -1,7 +1,7 @@
 #
 #    f o u n t a i n   S h o w   S c h e d u l e r . p y 
 #
-#    Last revision: IH240213
+#    Last revision: IH240214
 
 import sched
 import time
@@ -43,11 +43,14 @@ class FountainShowScheduler():
                         )
                 else:
                     self.scheduledEventList.append(self.scheduler.enter(
-                        deviceAction.time + self.startDelayMilliSeconds/1000,
-                        deviceAction.device,  #the device ID number defines priority
-                        deviceAction.method,
-                        kwargs=deviceAction.kwargs)) #IH240213 kwargs also contain "device" (this is ugly and should be revisited)
-
+                        delay=deviceAction.time + self.startDelayMilliSeconds/1000,
+                        priority=deviceAction.device,  #HACK the device native ID number defines priority                        
+                        action=deviceAction.method,
+                        argument=(),
+                        kwargs=deviceAction.kwargs))
+        # print(schedule)
+        # print(self.scheduler.queue)
+        
     @staticmethod
     def validateSchedule(scheduleInSimpleFormat) -> bool:
         """
@@ -101,14 +104,13 @@ class FountainShowScheduler():
             
             thisDevice = fountainApp["fountainDeviceCollection"].getDeviceFromSimpleFormatID(device_str)
             
-            kwargs_extended = eval(','.join(s[3:]))
+            kwargs_extended = eval(','.join(s[3:]))            
             kwargs_extended["device"] =  thisDevice.getNativeFormatID()
             s = ScheduledDeviceAction(
                 time=float(time_str),
                 device = thisDevice.getNativeFormatID(),
                 method = thisDevice.MethodNativeFormat(method_str),
                 kwargs = kwargs_extended)
-            # print(s)
             return s                        
         error="OK"
         try:
@@ -117,6 +119,11 @@ class FountainShowScheduler():
             print (expt)
             scheduleInNativeFormat = ""
             error="INVALID"        
+        print('-------------- SIMPLE -----------------')
+        print(scheduleInSimpleFormat)
+        print('-------------- NATIVE -----------------')
+        print(scheduleInNativeFormat)
+        print('--------------  -----------------')
         return scheduleInNativeFormat,error
    
 

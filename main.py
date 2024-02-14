@@ -90,8 +90,7 @@ def runShow(showSchedule=FountainShowScheduler.TestSchedule()):
 
 
 loopEnabled = True
-currentSchedule = FountainShowScheduler.TestSchedule()
-fountainApp['currentSchedule']=FountainShowScheduler.convertScheduleToSimple(currentSchedule)
+fountainApp['currentScheduleNative']=FountainShowScheduler.TestSchedule()
 while True:
     try:
         fountainHTTPServer.poll()
@@ -110,13 +109,12 @@ while True:
                 debugPrint(2,'fountainGlobalScheduler: new schedule loaded: ')
                 debugPrint(2,FountainHTTPServer.kwargsFromWebClient['show_schedule'])       
                 if FountainShowScheduler.validateSchedule(FountainHTTPServer.kwargsFromWebClient['show_schedule']):
-                       currentSchedule = FountainShowScheduler.convertScheduleToNative(
+                       fountainApp['currentScheduleNative'] = FountainShowScheduler.convertScheduleToNative(
                               FountainHTTPServer.kwargsFromWebClient['show_schedule'])[0]  #the first element of the tuple is the schedule
                        debugPrint(2,'fountainGlobalScheduler: schedule validated.')
                 else:
-                       currentSchedule = FountainShowScheduler.DefaultSchedule()
+                       fountainApp['currentScheduleNative'] = FountainShowScheduler.DefaultSchedule()
                        debugPrint(2,'fountainGlobalScheduler: schedule validation failed. Default schedule loaded.')  
-                fountainApp['currentSchedule']=FountainShowScheduler.convertScheduleToSimple(currentSchedule)
                 loopEnabled = False 
                 fountainGlobalScheduler.cleanSchedule()
                 debugPrint(2,'fountainGlobalScheduler: waiting for LOOP_START command')
@@ -125,7 +123,10 @@ while True:
                 nextScheduledTime = time.time() + 10  #IH240124 TODO the time daly between shows to be set from HTTP server 
                 debugPrint(2,f'fountainGlobalScheduler: next show scheduled to T+{timeToHMS(nextScheduledTime-fountainApp["timeAtStart"])} (current time is T+{timeToHMS(time.time()-fountainApp["timeAtStart"])})')
                 # print(f'current NTP time is {fountainHTTPServer.getNTPdatetime()}') #IH240111 does not work due to disabled port 123
-                fountainGlobalScheduler.enterabs(nextScheduledTime,1,runShow,kwargs={'showSchedule':currentSchedule})
+                print('--------------NATIVE BEFORE SCHEDULING -----------')
+                print(fountainApp['currentScheduleNative'])
+                print('-------------------------')
+                fountainGlobalScheduler.enterabs(nextScheduledTime,1,runShow,kwargs={'showSchedule':fountainApp['currentScheduleNative']})
                 # runShow may leave a commandFromWebClient pending
                 #IH240124 HACK 
                 if FountainHTTPServer.commandFromWebClient in [FountainHTTPServer.SHOW_STOP]:

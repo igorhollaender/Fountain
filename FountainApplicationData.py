@@ -1,13 +1,13 @@
 #
 #    f o u n t a i n   A p p l i c a t i o n   D a t a . p y 
 #
-#    Last revision: IH240212
+#    Last revision: IH240214
 #
 import time
 
 fountainApp={
        "version": "", # has to be assigned in the main.py
-       "currentSchedule": [],
+       "currentScheduleNative": [],
        "fountainDeviceCollection": [],
        "verboseLevel": 1,
        "simulated": True,
