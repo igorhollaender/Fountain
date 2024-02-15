@@ -43,8 +43,6 @@ gateway =  ipaddress.IPv4Address("192.168.0.1")       #IH231211 works in BA, W, 
 
 debugPrint(1,f"Verbose level {fountainApp["verboseLevel"]}")
 fountainDeviceStatusVisualizer = FountainDeviceStatusVisualizer(1)
-fountainApp["fountainDeviceStatusVisualizer"] = fountainDeviceStatusVisualizer
-
     
 fountainHTTPServer = FountainHTTPServer(
         os.getenv('CIRCUITPY_WIFI_SSID'),
@@ -66,6 +64,7 @@ fountainGlobalScheduler = sched.scheduler(timefunc=time.time)
 fountainHTTPServer.Start()
 fountainApp["timeAtStart"] = time.time()
 fountainApp["currentStatusString"] = "Idle"
+fountainApp["currentShowScheduler"] = None
 
 def runShow(showSchedule=FountainShowScheduler.TestSchedule()):
         debugPrint (2,f'SHOW started at T+{timeToHMS(time.time()-fountainApp["timeAtStart"])}')
@@ -74,6 +73,7 @@ def runShow(showSchedule=FountainShowScheduler.TestSchedule()):
                 showSchedule,
                 startDelayMilliSeconds=1000,
                 debug=True)
+        fountainApp["currentShowScheduler"]=fountainShowScheduler
         while not fountainShowScheduler.empty():
                 fountainHTTPServer.poll()
                 if FountainHTTPServer.commandFromWebClient in [ 
@@ -85,6 +85,7 @@ def runShow(showSchedule=FountainShowScheduler.TestSchedule()):
                 fountainDeviceStatusVisualizer.showStatusAll()
                 time.sleep(timeResolutionMilliseconds/1000*2)  #IH240108 heuristic 
         fountainShowScheduler.runCleanup()
+        fountainApp["currentShowScheduler"] = None
         debugPrint(2,f'SHOW finished at T+{timeToHMS(time.time()-fountainApp["timeAtStart"])}')
         fountainApp["currentStatusString"] = "Idle"
         # FountainHTTPServer.commandFromWebClient may still contain recently assigned value
@@ -130,6 +131,7 @@ while True:
                 loopEnabled = False 
                 fountainGlobalScheduler.cleanSchedule()
                 debugPrint(2,'fountainGlobalScheduler: waiting for LOOP_START command')
+                fountainApp["currentStatusString"] = "Idle, loop stopped"
         if loopEnabled and fountainGlobalScheduler.empty():
                 # schedule next Show
                 nextScheduledTime = time.time() + 10  #IH240124 TODO the time daly between shows to be set from HTTP server 

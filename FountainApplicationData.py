@@ -1,18 +1,20 @@
 #
 #    f o u n t a i n   A p p l i c a t i o n   D a t a . p y 
 #
-#    Last revision: IH240214
+#    Last revision: IH240215
 #
 import time
 
 fountainApp={
        "version": "", # has to be assigned in the main.py
+
        "currentScheduleNative": [],
        "currentStatusString": "Idle",
+       "currentShowScheduler": None,
+       
        "fountainDeviceCollection": [],
        "verboseLevel": 1,
        "simulated": True,
-       "fountainDeviceStatusVisualizer": None,
        "timeAtStart": 0,
     }
 

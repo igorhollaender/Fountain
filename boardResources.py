@@ -61,7 +61,6 @@ class FountainDevice:
         fountainApp["fountainDeviceCollection"].getDeviceFromNativeFormatID(device).setState("percentageValue",pwm_percentage)
         if fountainApp["simulated"]:
             debugPrint(2,f"Device {device}: pwm set to {pwm_percentage} percent")
-            boardLED.value = (pwm_percentage>50)
         else:
             #IH231219 TODO
             pass
@@ -72,11 +71,11 @@ class FountainDevice:
             
 
     @staticmethod
-    def pwm_setLinearRamp(device=1, pwm_percentage_begin=0, pwm_percentage_end=100, totalDuration=1, numberOfSteps=10, getSimpleFormatID=False):
+    def pwm_setLinearRamp(device=1, pwm_percentage_begin=0, pwm_percentage_end=100, totalDuration=1, numberOfInterimSteps=10, getSimpleFormatID=False):
         """
         Use to schedule pwm setup steps for linear ramp.
         totalDuration    is given in general time units
-        numberOfSteps    includes the beginning and end steps
+        numberOfInterimSteps    does NOT include the beginning and end
         
         
         This method is *static* because it will be used as parameter in the scheduler
@@ -84,9 +83,18 @@ class FountainDevice:
         """
         if getSimpleFormatID:
             return "LINRAMP"
+        
+        for delay in range(0,totalDuration,totalDuration/numberOfSteps+1))
+        pwm_percentage = (pwm_percentage_begin+pwm_percentage_end)*0.5
+        fountainApp["currentShowScheduler"].scheduledEventList.append(fountainApp["currentShowScheduler"].scheduler.enter(
+                        delay=0,
+                        priority=device,  #HACK the device native ID number defines priority                        
+                        action=FountainDevice.pwm_setConstant,
+                        argument=(),
+                        kwargs={"device":device,"pwm_percentage":pwm_percentage})
+                        )
         #IH231219 TODO  
-        # fountainApp["fountainDeviceCollection"].getDeviceFromNativeFormatID(device).setState("percentageValue",pwm_percentage)
-        pass
+
 
     # hardware control methods
     #IH240126 TODO  implement in a more elegant way
