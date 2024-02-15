@@ -77,9 +77,7 @@ class FountainDevice:
         totalDuration    is given in general time units
         numberOfInterimSteps    does NOT include the beginning and end
         
-        
         This method is *static* because it will be used as parameter in the scheduler
-        
         """
         if getSimpleFormatID:
             return "LINRAMP"
@@ -95,7 +93,36 @@ class FountainDevice:
                                 argument=(),
                             kwargs={"device":device,"pwm_percentage":stepValue})
                             )
-        # print(fountainApp["currentShowScheduler"].scheduledEventList)
+
+    @staticmethod
+    def pwm_setPulses(device=1, pwm_percentage_low=0, pwm_percentage_high=100, duration_low=1, duration_high=1, numberOfHighPulses=10, getSimpleFormatID=False):
+        """
+        Use to schedule pwm setup steps for a pulse series.
+        
+        This method is *static* because it will be used as parameter in the scheduler
+        """
+        if getSimpleFormatID:
+            return "PULSES"
+        
+        for pulseStep in range(0,numberOfHighPulses):
+            raisingEdgeDelay = pulseStep*(duration_high+duration_low)
+            fallingEdgeDelay = raisingEdgeDelay+duration_high
+            fountainApp["currentShowScheduler"].scheduledEventList.append(
+                            fountainApp["currentShowScheduler"].scheduler.enter(
+                                delay=raisingEdgeDelay,
+                                priority=1,                        
+                                action=FountainDevice.pwm_setConstant,
+                                argument=(),
+                            kwargs={"device":device,"pwm_percentage":pwm_percentage_high})
+                            )
+            fountainApp["currentShowScheduler"].scheduledEventList.append(
+                            fountainApp["currentShowScheduler"].scheduler.enter(
+                                delay=fallingEdgeDelay,
+                                priority=1,                        
+                                action=FountainDevice.pwm_setConstant,
+                                argument=(),
+                            kwargs={"device":device,"pwm_percentage":pwm_percentage_low})
+                            )
 
 
     # hardware control methods
@@ -104,7 +131,9 @@ class FountainDevice:
     def MethodNativeFormat(method_simpleFormatID):
         for method in [
                 FountainDevice.pwm_setConstant,
-                FountainDevice.pwm_setLinearRamp]:
+                FountainDevice.pwm_setLinearRamp,
+                FountainDevice.pwm_setPulses,
+                ]:
             if method(getSimpleFormatID=True)==method_simpleFormatID:
                 return method
 

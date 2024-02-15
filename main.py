@@ -145,7 +145,7 @@ while True:
                                   
         fountainDeviceStatusVisualizer.showStatusAll()                                  
 
-        time.sleep(timeResolutionMilliseconds/1000*2)  #IH240108 heuristic
+        time.sleep(timeResolutionMilliseconds/1000*0.5)  #IH240108 heuristic
      
     except Exception as e:
         debugPrint(1,e)
