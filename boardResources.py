@@ -84,16 +84,18 @@ class FountainDevice:
         if getSimpleFormatID:
             return "LINRAMP"
         
-        for delay in range(0,totalDuration,totalDuration/numberOfSteps+1))
-        pwm_percentage = (pwm_percentage_begin+pwm_percentage_end)*0.5
-        fountainApp["currentShowScheduler"].scheduledEventList.append(fountainApp["currentShowScheduler"].scheduler.enter(
-                        delay=0,
-                        priority=device,  #HACK the device native ID number defines priority                        
-                        action=FountainDevice.pwm_setConstant,
-                        argument=(),
-                        kwargs={"device":device,"pwm_percentage":pwm_percentage})
-                        )
-        #IH231219 TODO  
+        for rampStep in range(0,numberOfInterimSteps+1):
+            stepDelay = rampStep*totalDuration/(numberOfInterimSteps+1)
+            stepValue = pwm_percentage_begin + rampStep*(pwm_percentage_end-pwm_percentage_begin)/(numberOfInterimSteps+1)
+            fountainApp["currentShowScheduler"].scheduledEventList.append(
+                            fountainApp["currentShowScheduler"].scheduler.enter(
+                                delay=stepDelay,
+                                priority=1,                        
+                                action=FountainDevice.pwm_setConstant,
+                                argument=(),
+                            kwargs={"device":device,"pwm_percentage":stepValue})
+                            )
+        # print(fountainApp["currentShowScheduler"].scheduledEventList)
 
 
     # hardware control methods
@@ -108,31 +110,6 @@ class FountainDevice:
 
 
     
-    # def pwm_setConstant(self, pwm_percentage=100, getSimpleFormatID=False):
-    #     global fountainSimulated
-    #     #IH231219 TODO
-    #     if getSimpleFormatID:
-    #         return "CONST"
-    #     self.setState["percentageValue",pwm_percentage]
-    #     if fountainApp["simulated"]:
-    #         debugPrint(2,f"Device {self.getSimpleFormatID()}: pwm set to {pwm_percentage} percent")
-    #         boardLED.value = (pwm_percentage>50)
-    #         return
-    #     else:
-    #         pass
-    #     pass
-
-    # def pwm_setLinearRamp(self, pwm_percentage_begin=0, pwm_percentage_end=100, totalDuration=1, numberOfSteps=10, getSimpleFormatID=False):
-    #     """
-    #     Use to schedule pwm setup steps for linear ramp.
-    #     totalDuration    is given in general time units
-    #     numberOfSteps    includes the beginning and end steps
-    #     """
-    #     if getSimpleFormatID:
-    #         return "LINRAMP"
-    #     #IH231219 TODO  
-    #     pass
-
 
 
 # IH240205 TODO implement FountainDevice as a class for a *single device*, then
@@ -178,66 +155,3 @@ class FountainDeviceCollection():
 
     def getNativeDeviceIDFromSimpleDeviceID(self,deviceSimpleFormatID) -> int:
         return self.getDeviceFromSimpleFormatID(deviceSimpleFormatID).getNativeFormatID()
-
-
-    #IH240124 TODO  implement in a more elegant way
-    #Ih240207 OBSOLETE
-    #DeviceSimpleFormat_OLD = {
-    #        PUMP1:"PUMP1",
-    #        PUMP2:"PUMP2",
-    #        LED1:"LED1",
-    #        LED2:"LED2",
-    #        }
-    
-    #IH240126 HACK Dangereous!
-    #IH2402207 OBSOLETE
-    #def DeviceNativeFormat_OLD(device_str): #inversed DeviceSimpleFormat dictionary
-    #    return list(FountainDeviceCollection.DeviceSimpleFormat.keys())[list(FountainDeviceCollection.DeviceSimpleFormat.values()).index(device_str)]
-    
-    #IH240207 DEPRECATED 
-    # TODO to be replaced by getNativeDeviceIDFromSimpleDeviceID
-    #def DeviceNativeFormat(self,device_str) -> int:
-    #    for d in self.deviceList:
-    #        if d.getSimpleFormatID==device_str:
-    #            return d.getNativeFormatID()
-            
-    #IH240207 DEPRECATED 
-    # TODO to be replaced by getSimpleDeviceIDFromNativeDeviceID
-    #def DeviceSimpleFormat(self,device) -> str:
-    #    for d in self.deviceList:
-    #        if d.getNativeFormatID()==device:
-    #            return d.getSimpleFormatID()
-            
-   
-        
-    
-    # def pwm_setConstant_NEW(self,device=0, pwm_percentage=100, getSimpleFormatID=False):
-    #     return self.deviceList[device].pwm_setConstant(pwm_percentage,getSimpleFormatID)
-    
-    # def pwm_setLinearRamp_NEW(self,device=0, pwm_percentage_begin=0, pwm_percentage_end=100, totalDuration=1, numberOfSteps=10, getSimpleFormatID=False):
-    #     return self.deviceList[device].pwm_setLinearRamp(pwm_percentage_begin, pwm_percentage_end, totalDuration, numberOfSteps, getSimpleFormatID)
-    
-
-    # def pwm_setConstant(device=0, pwm_percentage=100, getSimpleFormatID=False):
-    #     global fountainSimulated
-    #     #IH231219 TODO
-    #     if getSimpleFormatID:
-    #         return "CONST"
-    #     if fountainSimulated:
-    #         debugPrint(2,f"Device {device}: pwm set to {pwm_percentage} percent")
-    #         boardLED.value = (pwm_percentage>50)
-    #         return
-    #     else:
-    #         pass
-    #     pass
-
-    # def pwm_setLinearRamp(device=0, pwm_percentage_begin=0, pwm_percentage_end=100, totalDuration=1, numberOfSteps=10, getSimpleFormatID=False):
-    #     """
-    #     Use to schedule pwm setup steps for linear ramp.
-    #     totalDuration    is given in general time units
-    #     numberOfSteps    includes the beginning and end steps
-    #     """
-    #     if getSimpleFormatID:
-    #         return "LINRAMP"
-    #     #IH231219 TODO  
-    #     pass
