@@ -1,7 +1,7 @@
 #
 #    b o a r d    R e s o u r c e s  . p y 
 #
-#    Last revision: IH240214
+#    Last revision: IH240215
 #
 #
 
@@ -55,16 +55,16 @@ class FountainDevice:
         """
         This method is *static* because it will be used as parameter in the scheduler
         """
-        #IH231219 TODO
+        
         if getSimpleFormatID:
             return "CONST"
+        fountainApp["fountainDeviceCollection"].getDeviceFromNativeFormatID(device).setState("percentageValue",pwm_percentage)
         if fountainApp["simulated"]:
             debugPrint(2,f"Device {device}: pwm set to {pwm_percentage} percent")
             boardLED.value = (pwm_percentage>50)
-            return
         else:
+            #IH231219 TODO
             pass
-        fountainApp["fountainDeviceCollection"].getDeviceFromNativeFormatID(device).setState("percentageValue",pwm_percentage)
             
 
     @staticmethod
@@ -81,6 +81,7 @@ class FountainDevice:
         if getSimpleFormatID:
             return "LINRAMP"
         #IH231219 TODO  
+        # fountainApp["fountainDeviceCollection"].getDeviceFromNativeFormatID(device).setState("percentageValue",pwm_percentage)
         pass
 
     # hardware control methods

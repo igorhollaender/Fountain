@@ -8,6 +8,7 @@ import time
 fountainApp={
        "version": "", # has to be assigned in the main.py
        "currentScheduleNative": [],
+       "currentStatusString": "Idle",
        "fountainDeviceCollection": [],
        "verboseLevel": 1,
        "simulated": True,

@@ -26,7 +26,7 @@ from FountainDeviceStatusVisualizer import FountainDeviceStatusVisualizer
 
 
 fountainApp["version"]                  = "240215a"
-fountainApp["verboseLevel"]             = 2 
+fountainApp["verboseLevel"]             = 1 
 fountainApp["simulated"]                = True
 
 fountainDeviceCollection = FountainDeviceCollection()
@@ -42,7 +42,7 @@ gateway =  ipaddress.IPv4Address("192.168.0.1")       #IH231211 works in BA, W, 
 
 
 debugPrint(1,f"Verbose level {fountainApp["verboseLevel"]}")
-fountainDeviceStatusVisualizer = FountainDeviceStatusVisualizer(0)
+fountainDeviceStatusVisualizer = FountainDeviceStatusVisualizer(1)
 fountainApp["fountainDeviceStatusVisualizer"] = fountainDeviceStatusVisualizer
 
     
@@ -65,9 +65,11 @@ fountainHTTPServer = FountainHTTPServer(
 fountainGlobalScheduler = sched.scheduler(timefunc=time.time)
 fountainHTTPServer.Start()
 fountainApp["timeAtStart"] = time.time()
+fountainApp["currentStatusString"] = "Idle"
 
 def runShow(showSchedule=FountainShowScheduler.TestSchedule()):
         debugPrint (2,f'SHOW started at T+{timeToHMS(time.time()-fountainApp["timeAtStart"])}')
+        fountainApp["currentStatusString"] = "Show running"
         fountainShowScheduler  = FountainShowScheduler(
                 showSchedule,
                 startDelayMilliSeconds=1000,
@@ -84,6 +86,7 @@ def runShow(showSchedule=FountainShowScheduler.TestSchedule()):
                 time.sleep(timeResolutionMilliseconds/1000*2)  #IH240108 heuristic 
         fountainShowScheduler.runCleanup()
         debugPrint(2,f'SHOW finished at T+{timeToHMS(time.time()-fountainApp["timeAtStart"])}')
+        fountainApp["currentStatusString"] = "Idle"
         # FountainHTTPServer.commandFromWebClient may still contain recently assigned value
         # this will be processed in the higher-level loop
 
@@ -98,8 +101,10 @@ while True:
                 loopEnabled = False 
                 FountainHTTPServer.commandFromWebClient = None
                 debugPrint (2,f'LOOP stopped at T+{timeToHMS(time.time()-fountainApp["timeAtStart"])}')
+                fountainApp["currentStatusString"] = "Idle, loop stopped"
         if loopEnabled:
                 fountainGlobalScheduler.run(blocking=False)
+                fountainApp["currentStatusString"] = "Idle, loop active"
         if FountainHTTPServer.commandFromWebClient in [FountainHTTPServer.LOOP_START]:
                 loopEnabled = True 
                 FountainHTTPServer.commandFromWebClient = None
