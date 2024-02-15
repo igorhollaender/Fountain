@@ -65,6 +65,10 @@ class FountainDevice:
         else:
             #IH231219 TODO
             pass
+
+        #IH240215 for debugging only
+        if device==FountainDeviceCollection.LED1:
+            boardLED.value = pwm_percentage>50
             
 
     @staticmethod

@@ -97,6 +97,13 @@ fountainApp['currentScheduleNative']=FountainShowScheduler.TestSchedule()
 while True:
     try:
         fountainHTTPServer.poll()
+
+        if FountainHTTPServer.commandFromWebClient in [FountainHTTPServer.LED1_ON]:
+                FountainHTTPServer.commandFromWebClient = None
+                fountainDeviceCollection.getDeviceFromNativeFormatID(FountainDeviceCollection.LED1).pwm_setConstant(FountainDeviceCollection.LED1,pwm_percentage=100)
+        if FountainHTTPServer.commandFromWebClient in [FountainHTTPServer.LED1_OFF]:
+                FountainHTTPServer.commandFromWebClient = None
+                fountainDeviceCollection.getDeviceFromNativeFormatID(FountainDeviceCollection.LED1).pwm_setConstant(FountainDeviceCollection.LED1,pwm_percentage=0)
         if FountainHTTPServer.commandFromWebClient in [FountainHTTPServer.LOOP_STOP]:
                 loopEnabled = False 
                 FountainHTTPServer.commandFromWebClient = None

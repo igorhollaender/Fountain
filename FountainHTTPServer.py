@@ -1,7 +1,7 @@
 #
 #    f o u n t a i n   H T T P   S e r v e r . p y 
 #
-#    Last revision: IH240214
+#    Last revision: IH240215
 #
 #
 #    based on 
@@ -36,6 +36,10 @@ class FountainHTTPServer():
     LOOP_START              = 4
     LOOP_STOP               = 5
     
+    # IH240115 for debugging only
+    LED1_ON                 = 101
+    LED1_OFF                = 102
+
     #IH2410112 class variables  (for singleton only)
     commandFromWebClient = None
     kwargsFromWebClient = {}
@@ -154,12 +158,13 @@ class FountainHTTPServer():
         debugPrint(2,f'form data is "{form_data}"')
 
         # for debugging
-        #  if the led on button was pressed
         if "BUTTON_LED_ON" in form_data:
-            boardLED.value = True
+            FountainHTTPServer.commandFromWebClient = FountainHTTPServer.LED1_ON
+            FountainHTTPServer.kwargsFromWebClient = {}
         #  if the led off button was pressed
         if "BUTTON_LED_OFF" in form_data:
-            boardLED.value = False
+            FountainHTTPServer.commandFromWebClient = FountainHTTPServer.LED1_OFF
+            FountainHTTPServer.kwargsFromWebClient = {}
         
         if "BUTTON_SHOW_STOP" in form_data:  #  stop current show (but continue loop)
             FountainHTTPServer.commandFromWebClient = FountainHTTPServer.SHOW_STOP
