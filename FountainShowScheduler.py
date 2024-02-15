@@ -1,7 +1,7 @@
 #
 #    f o u n t a i n   S h o w   S c h e d u l e r . p y 
 #
-#    Last revision: IH240214
+#    Last revision: IH240215
 
 import sched
 import time
@@ -30,8 +30,6 @@ class FountainShowScheduler():
         self.cleanupEventList = []
         self.setSchedule(self.showSchedule)
         
-        # print(f"FOUNTAIN--> Actual queue: {self.scheduler.queue}")
-
     def setSchedule(self,schedule):
         self.cleanSchedule()
         for deviceAction in schedule:
@@ -48,8 +46,6 @@ class FountainShowScheduler():
                         action=deviceAction.method,
                         argument=(),
                         kwargs=deviceAction.kwargs))
-        # print(schedule)
-        # print(self.scheduler.queue)
         
     @staticmethod
     def validateSchedule(scheduleInSimpleFormat) -> bool:
@@ -65,8 +61,7 @@ class FountainShowScheduler():
         """
         def convertActionToSimple(actionInNativeFormat: ScheduledDeviceAction) -> str:
             if actionInNativeFormat is None:
-                return ""
-            actionInNativeFormat.kwargs.pop("device",None)   # remove "device" key if it exists      
+                return ""    
             actionInSimpleFormat = ""
             actionInSimpleFormat += str(actionInNativeFormat.time) + ','
             actionInSimpleFormat += fountainApp["fountainDeviceCollection"].getSimpleDeviceIDFromNativeDeviceID(actionInNativeFormat.device) + ','
@@ -121,11 +116,6 @@ class FountainShowScheduler():
             print (expt)
             scheduleInNativeFormat = ""
             error="INVALID"        
-        print('-------------- SIMPLE -----------------')
-        print(scheduleInSimpleFormat)
-        print('-------------- NATIVE -----------------')
-        print(scheduleInNativeFormat)
-        print('--------------  -----------------')
         return scheduleInNativeFormat,error
    
 

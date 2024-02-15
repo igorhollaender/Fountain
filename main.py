@@ -4,7 +4,7 @@
 #
 #     The Fountain project
 #    
-#     Last revision: IH240212
+#     Last revision: IH240215
 #
 #
 
@@ -25,16 +25,16 @@ from FountainApplicationData import fountainApp, debugPrint, timeToHMS
 from FountainDeviceStatusVisualizer import FountainDeviceStatusVisualizer
 
 
-fountainApp["version"]                  = "240213a"
+fountainApp["version"]                  = "240215a"
 fountainApp["verboseLevel"]             = 2 
 fountainApp["simulated"]                = True
 
 fountainDeviceCollection = FountainDeviceCollection()
 fountainApp["fountainDeviceCollection"] = fountainDeviceCollection
 
-ipv4    =  ipaddress.IPv4Address("192.168.0.110")     #IH231211 "192.168.0.110" works in BA
+# ipv4    =  ipaddress.IPv4Address("192.168.0.110")     #IH231211 "192.168.0.110" works in BA
 # ipv4    =  ipaddress.IPv4Address("192.168.0.195")     #IH231219 "192.168.0.195" works in W
-# ipv4    =  ipaddress.IPv4Address("192.168.1.30")     #IH231219 "192.168.1.30" works in BV
+ipv4    =  ipaddress.IPv4Address("192.168.1.30")     #IH231219 "192.168.1.30" works in BV
 
 netmask =  ipaddress.IPv4Address("255.255.255.0")     #IH231211 works in BA, W, BV
 gateway =  ipaddress.IPv4Address("192.168.0.1")       #IH231211 works in BA, W, BV
@@ -117,18 +117,12 @@ while True:
                        debugPrint(2,'fountainGlobalScheduler: schedule validation failed. Default schedule loaded.')  
                 loopEnabled = False 
                 fountainGlobalScheduler.cleanSchedule()
-                print('--------------NATIVE READY FOR LOOP -----------')
-                print(fountainApp['currentScheduleNative'])
-                print('-------------------------')
                 debugPrint(2,'fountainGlobalScheduler: waiting for LOOP_START command')
         if loopEnabled and fountainGlobalScheduler.empty():
                 # schedule next Show
                 nextScheduledTime = time.time() + 10  #IH240124 TODO the time daly between shows to be set from HTTP server 
                 debugPrint(2,f'fountainGlobalScheduler: next show scheduled to T+{timeToHMS(nextScheduledTime-fountainApp["timeAtStart"])} (current time is T+{timeToHMS(time.time()-fountainApp["timeAtStart"])})')
                 # print(f'current NTP time is {fountainHTTPServer.getNTPdatetime()}') #IH240111 does not work due to disabled port 123
-                print('--------------NATIVE BEFORE SCHEDULING -----------')
-                print(fountainApp['currentScheduleNative'])
-                print('-------------------------')
                 fountainGlobalScheduler.enterabs(nextScheduledTime,1,runShow,kwargs={'showSchedule':fountainApp['currentScheduleNative']})
                 # runShow may leave a commandFromWebClient pending
                 #IH240124 HACK 
@@ -136,10 +130,6 @@ while True:
                        FountainHTTPServer.commandFromWebClient = None
                                   
         fountainDeviceStatusVisualizer.showStatusAll()                                  
-
-        # print('--------------NATIVE between polls-----------')
-        # print(fountainApp['currentScheduleNative'])
-        # print('-------------------------')
 
         time.sleep(timeResolutionMilliseconds/1000*2)  #IH240108 heuristic
      
