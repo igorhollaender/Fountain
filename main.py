@@ -4,7 +4,7 @@
 #
 #     The Fountain project
 #    
-#     Last revision: IH240215
+#     Last revision: IH240219
 #
 #
 
@@ -25,16 +25,16 @@ from FountainApplicationData import fountainApp, debugPrint, timeToHMS
 from FountainDeviceStatusVisualizer import FountainDeviceStatusVisualizer
 
 
-fountainApp["version"]                  = "240215a"
+fountainApp["version"]                  = "240219a"
 fountainApp["verboseLevel"]             = 1 
 fountainApp["simulated"]                = True
 
 fountainDeviceCollection = FountainDeviceCollection()
 fountainApp["fountainDeviceCollection"] = fountainDeviceCollection
 
-# ipv4    =  ipaddress.IPv4Address("192.168.0.110")     #IH231211 "192.168.0.110" works in BA
+ipv4    =  ipaddress.IPv4Address("192.168.0.110")     #IH231211 "192.168.0.110" works in BA
 # ipv4    =  ipaddress.IPv4Address("192.168.0.195")     #IH231219 "192.168.0.195" works in W
-ipv4    =  ipaddress.IPv4Address("192.168.1.30")     #IH231219 "192.168.1.30" works in BV
+# ipv4    =  ipaddress.IPv4Address("192.168.1.30")     #IH231219 "192.168.1.30" works in BV
 
 netmask =  ipaddress.IPv4Address("255.255.255.0")     #IH231211 works in BA, W, BV
 gateway =  ipaddress.IPv4Address("192.168.0.1")       #IH231211 works in BA, W, BV
@@ -81,9 +81,14 @@ def runShow(showSchedule=FountainShowScheduler.TestSchedule()):
                                 FountainHTTPServer.LOOP_STOP, 
                                 FountainHTTPServer.SHOW_SUBMIT_SCHEDULE]:
                         fountainShowScheduler.cleanSchedule()    # this effectively breaks the while loop
+                if FountainHTTPServer.commandFromWebClient in [ 
+                                FountainHTTPServer.LED1_ON, 
+                                FountainHTTPServer.LED1_OFF]:
+                       fountainDeviceCollection.getDeviceFromNativeFormatID(FountainDeviceCollection.LED1).pwm_setConstant(FountainDeviceCollection.LED1,
+                                pwm_percentage=100 if FountainHTTPServer.commandFromWebClient==fountainHTTPServer.LED1_ON else 0)
                 fountainShowScheduler.runNonblocking()
                 fountainDeviceStatusVisualizer.showStatusAll()
-                time.sleep(timeResolutionMilliseconds/1000*2)  #IH240108 heuristic 
+                time.sleep(timeResolutionMilliseconds/1000)  #IH240108 heuristic 
         fountainShowScheduler.runCleanup()
         fountainApp["currentShowScheduler"] = None
         debugPrint(2,f'SHOW finished at T+{timeToHMS(time.time()-fountainApp["timeAtStart"])}')
@@ -145,7 +150,7 @@ while True:
                                   
         fountainDeviceStatusVisualizer.showStatusAll()                                  
 
-        time.sleep(timeResolutionMilliseconds/1000*0.5)  #IH240108 heuristic
+        time.sleep(timeResolutionMilliseconds/1000)  #IH240108 heuristic
      
     except Exception as e:
         debugPrint(1,e)
