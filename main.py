@@ -74,8 +74,20 @@ def runShow(showSchedule=FountainShowScheduler.TestSchedule()):
                 startDelayMilliSeconds=1000,
                 debug=True)
         fountainApp["currentShowScheduler"]=fountainShowScheduler
+        heartBeadCounter=0
         while not fountainShowScheduler.empty():
                 fountainHTTPServer.poll()
+
+                #IH240219 simple heartbeat 
+                if heartBeadCounter<20:
+                        heartBeadCounter+=1
+                else:
+                        fountainDeviceCollection.getDeviceFromNativeFormatID(FountainDeviceCollection.LED1).pwm_setConstant(FountainDeviceCollection.LED1,
+                                pwm_percentage=100
+                                if fountainDeviceCollection.getDeviceFromNativeFormatID(FountainDeviceCollection.LED1).getState("percentageValue")==0
+                                else 0)
+                        heartBeadCounter=0
+                
                 if FountainHTTPServer.commandFromWebClient in [ 
                                 FountainHTTPServer.SHOW_STOP, 
                                 FountainHTTPServer.LOOP_STOP, 
@@ -88,7 +100,10 @@ def runShow(showSchedule=FountainShowScheduler.TestSchedule()):
                                 pwm_percentage=100 if FountainHTTPServer.commandFromWebClient==fountainHTTPServer.LED1_ON else 0)
                 fountainShowScheduler.runNonblocking()
                 fountainDeviceStatusVisualizer.showStatusAll()
+                                       
                 time.sleep(timeResolutionMilliseconds/1000)  #IH240108 heuristic 
+
+
         fountainShowScheduler.runCleanup()
         fountainApp["currentShowScheduler"] = None
         debugPrint(2,f'SHOW finished at T+{timeToHMS(time.time()-fountainApp["timeAtStart"])}')
@@ -100,9 +115,21 @@ def runShow(showSchedule=FountainShowScheduler.TestSchedule()):
 
 loopEnabled = True
 fountainApp['currentScheduleNative']=FountainShowScheduler.TestSchedule()
+heartBeadCounter=0
 while True:
     try:
         fountainHTTPServer.poll()
+
+        #IH240219 simple heartbeat 
+        if heartBeadCounter<150:
+                heartBeadCounter+=1
+        else:
+                fountainDeviceCollection.getDeviceFromNativeFormatID(FountainDeviceCollection.LED1).pwm_setConstant(FountainDeviceCollection.LED1,
+                        pwm_percentage=100
+                        if fountainDeviceCollection.getDeviceFromNativeFormatID(FountainDeviceCollection.LED1).getState("percentageValue")==0
+                                else 0)
+                heartBeadCounter=0
+
 
         if FountainHTTPServer.commandFromWebClient in [FountainHTTPServer.LED1_ON]:
                 FountainHTTPServer.commandFromWebClient = None

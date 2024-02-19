@@ -1,7 +1,7 @@
 #
 #    b o a r d    R e s o u r c e s  . p y 
 #
-#    Last revision: IH240215
+#    Last revision: IH240219
 #
 #
 
@@ -12,7 +12,7 @@ from FountainApplicationData import fountainApp, debugPrint
 
 # --- diverse
 
-timeResolutionMilliseconds = 50
+timeResolutionMilliseconds = 0
 
 # --- general Adafruit board resources
 

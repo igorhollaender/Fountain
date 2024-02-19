@@ -1,7 +1,7 @@
 #
 #    F o u n t a i n   D e v i c e   S t a t u s   V i s u a l i z e r . p y 
 #
-#    Last revision: IH240215
+#    Last revision: IH240219
 
 import time
 from boardResources import FountainDeviceCollection
@@ -33,6 +33,9 @@ class FountainDeviceStatusVisualizer():
     def showStatusAll(self) -> None:
         self.visualizerPrint(f'Time T+{timeToHMS(time.time()-fountainApp["timeAtStart"])}, {fountainApp["currentStatusString"]}')
         for device in fountainApp["fountainDeviceCollection"].deviceList:
+            if device.getNativeFormatID() in [FountainDeviceCollection.LED1]: #IH240219 LED1 (board LED) temporarily used for heartBeat
+                self.visualizerPrint (f'{device.getSimpleFormatID()}: not monitored')        
+                continue
             self.showDeviceStatus(device)
         self.visualizerFlushPrintBuffer()
 
