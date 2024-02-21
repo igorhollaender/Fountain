@@ -16,10 +16,11 @@ import time
 import supervisor
 #  import adafruit_ntp   #IH40122 this is abandoned since it would require opening the 123 port
 from adafruit_httpserver import Request, Response
+from asyncio import create_task, gather, run, sleep as async_sleep
 
 
 from FountainHTTPServer import FountainHTTPServer
-from  FountainShowScheduler import FountainShowScheduler
+from FountainShowScheduler import FountainShowScheduler
 from FountainSimulatedRTC import FountainSimulatedRTC
 from boardResources import boardLED, FountainDeviceCollection, timeResolutionMilliseconds
 from FountainApplicationData import fountainApp, debugPrint, timeToHMS
@@ -61,11 +62,89 @@ fountainHTTPServer = FountainHTTPServer(
 #          debug=True)
 
 
+
 fountainGlobalScheduler = sched.scheduler(timefunc=time.time)
 fountainHTTPServer.Start()
 fountainApp["timeAtStart"] = time.time()
 fountainApp["currentStatusString"] = "Idle"
 fountainApp["currentShowScheduler"] = None
+fountainApp["websocket"] = None
+
+showRunning=False
+
+async def handle_http_requests():
+        while showRunning:
+                fountainHTTPServer.poll()
+                await async_sleep(0)
+
+async def handle_websocket_requests():
+        while showRunning:
+                if fountainApp["websocket"] is not None:
+                        # IH240221 TODO
+                        pass
+                await async_sleep(0)
+
+async def handle_websocket_messages():
+        while showRunning:
+                if fountainApp["websocket"] is not None:                
+                        # IH240221 TODO
+                        fountainHTTPServer.fountainApp["websocket"] .send_message("LALALA",fail_silently=True)
+                        pass
+                await async_sleep(0)
+
+async def handle_show_scheduler_events(scheduler,showSchedule):
+        heartBeadCounter=0
+        cycleDurationMs_start = supervisor.ticks_ms()
+        global showRunning
+        
+        while not scheduler.empty():                
+                
+                #IH240219 simple heartbeat 
+                if heartBeadCounter<20:  # FAST  heartbeat means: loop active, show running
+                        heartBeadCounter+=1
+                else:
+                        fountainDeviceCollection.getDeviceFromNativeFormatID(FountainDeviceCollection.LED1).pwm_setConstant(FountainDeviceCollection.LED1,
+                                pwm_percentage=100
+                                if fountainDeviceCollection.getDeviceFromNativeFormatID(FountainDeviceCollection.LED1).getState("percentageValue")==0
+                                else 0)
+                        heartBeadCounter=0
+                        fountainApp["recentCycleDurationMs"] = supervisor.ticks_ms() - cycleDurationMs_start
+                cycleDurationMs_start = supervisor.ticks_ms()
+                
+                if FountainHTTPServer.commandFromWebClient in [ 
+                                FountainHTTPServer.SHOW_STOP, 
+                                FountainHTTPServer.LOOP_STOP, 
+                                FountainHTTPServer.SHOW_SUBMIT_SCHEDULE]:
+                        scheduler.cleanSchedule()    # this effectively breaks the while loop
+                if FountainHTTPServer.commandFromWebClient in [ 
+                                FountainHTTPServer.LED1_ON, 
+                                FountainHTTPServer.LED1_OFF]:
+                       fountainDeviceCollection.getDeviceFromNativeFormatID(FountainDeviceCollection.LED1).pwm_setConstant(FountainDeviceCollection.LED1,
+                                pwm_percentage=100 if FountainHTTPServer.commandFromWebClient==fountainHTTPServer.LED1_ON else 0)
+                scheduler.runNonblocking()
+                fountainDeviceStatusVisualizer.showStatusAll()
+
+                await async_sleep(0)                                                       
+        showRunning = False
+
+async def runShow_async_work(scheduler,showSchedule):
+        await gather(
+                create_task(handle_http_requests()),       
+                create_task(handle_websocket_requests()),       
+                create_task(handle_websocket_messages()),       
+                create_task(handle_show_scheduler_events(scheduler,showSchedule)),       
+                )
+        
+async def runShow_async(showSchedule=FountainShowScheduler.TestSchedule()):
+        debugPrint (2,f'SHOW started at T+{timeToHMS(time.time()-fountainApp["timeAtStart"])}')
+        fountainApp["currentStatusString"] = "Show running"
+        fountainShowScheduler  = FountainShowScheduler(
+                showSchedule,
+                startDelayMilliSeconds=1000,
+                debug=True)
+        fountainApp["currentShowScheduler"]=fountainShowScheduler
+        run(runShow_async_work(scheduler=FountainShowScheduler,showSchedule=showSchedule))        
+
 
 def runShow(showSchedule=FountainShowScheduler.TestSchedule()):
         debugPrint (2,f'SHOW started at T+{timeToHMS(time.time()-fountainApp["timeAtStart"])}')

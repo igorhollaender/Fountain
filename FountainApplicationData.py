@@ -4,6 +4,9 @@
 #    Last revision: IH240221
 #
 import time
+from adafruit_httpserver import Websocket
+
+ws : Websocket = None
 
 fountainApp={
        "version": "", # has to be assigned in the main.py
@@ -17,6 +20,8 @@ fountainApp={
        "simulated": True,
        "timeAtStart": 0,
        "recentCycleDurationMs": 0,
+
+       "websocket": ws,
     }
 
 def debugPrint(debugLevel,s):

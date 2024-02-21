@@ -24,7 +24,7 @@ import adafruit_ntp
 import ssl
 import adafruit_requests
 
-from adafruit_httpserver import Server, Request, Response, Route, GET, POST
+from adafruit_httpserver import Server, Request, Response, Route, Websocket, GET, POST
 from boardResources import boardLED
 from FountainApplicationData import fountainApp, debugPrint
 import FountainShowScheduler
@@ -65,7 +65,7 @@ class FountainHTTPServer():
 
         self.debug = debug
         self.server = None
-
+        
             
 
     def Start(self):
@@ -93,6 +93,7 @@ class FountainHTTPServer():
         self.server.add_routes([
                 Route("/",GET, FountainHTTPServer.base),
                 Route("/",POST, FountainHTTPServer.buttonpress),
+                Route("/",GET, FountainHTTPServer.connect_client),
         ])
         
 
@@ -185,6 +186,13 @@ class FountainHTTPServer():
         #  reload site
         return Response(request, f"{FountainHTTPServer.Webpage()}", content_type='text/html')
 
+    @staticmethod
+    def connect_client(request: Request):
+        if fountainApp["websocket"] is not None:
+            fountainApp["websocket"].close()
+        fountainApp["websocket"] = Websocket(request)
+        return fountainApp["websocket"]
+    
     @staticmethod
     def Webpage():
         font_family = "monospace"
@@ -294,6 +302,11 @@ class FountainHTTPServer():
         </script>
 
         <body>
+        <script>
+            let ws = new WebSocket('ws://' + location.host + '/connect-websocket');
+            ws.onopen = () => console.log('WebSocket connection opened');
+            ws.onclose = () => console.log('WebSocket connection closed');
+        </script>
         <title>Fountain HTTP Server</title>
         <h1>Fountain HTTP Server Ver.{version}</h1>
         
