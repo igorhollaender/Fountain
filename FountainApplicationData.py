@@ -1,7 +1,7 @@
 #
 #    f o u n t a i n   A p p l i c a t i o n   D a t a . p y 
 #
-#    Last revision: IH240215
+#    Last revision: IH240221
 #
 import time
 
@@ -16,6 +16,7 @@ fountainApp={
        "verboseLevel": 1,
        "simulated": True,
        "timeAtStart": 0,
+       "recentCycleDurationMs": 0,
     }
 
 def debugPrint(debugLevel,s):

@@ -1,15 +1,18 @@
 #
 #    f o u n t a i n   H T T P   S e r v e r . p y 
 #
-#    Last revision: IH240215
+#    Last revision: IH240221
 #
 #
-#    based on 
-#    https://learn.adafruit.com/pico-w-http-server-with-circuitpython/code-the-pico-w-http-server
+#   based on 
+#   https://learn.adafruit.com/pico-w-http-server-with-circuitpython/code-the-pico-w-http-server
 #
 #         SPDX-FileCopyrightText: 2023 Liz Clark for Adafruit Industries
 #         SPDX-License-Identifier: MIT
-
+#
+#   for websockets, see
+#   https://docs.circuitpython.org/projects/httpserver/en/latest/examples.html#websockets
+#
 import board
 import microcontroller
 import os

@@ -4,7 +4,7 @@
 #
 #     The Fountain project
 #    
-#     Last revision: IH240219
+#     Last revision: IH240221
 #
 #
 
@@ -13,6 +13,7 @@ import ipaddress
 import os
 import sched
 import time
+import supervisor
 #  import adafruit_ntp   #IH40122 this is abandoned since it would require opening the 123 port
 from adafruit_httpserver import Request, Response
 
@@ -25,7 +26,7 @@ from FountainApplicationData import fountainApp, debugPrint, timeToHMS
 from FountainDeviceStatusVisualizer import FountainDeviceStatusVisualizer
 
 
-fountainApp["version"]                  = "240219a"
+fountainApp["version"]                  = "240221a"
 fountainApp["verboseLevel"]             = 1 
 fountainApp["simulated"]                = True
 
@@ -75,11 +76,14 @@ def runShow(showSchedule=FountainShowScheduler.TestSchedule()):
                 debug=True)
         fountainApp["currentShowScheduler"]=fountainShowScheduler
         heartBeadCounter=0
-        while not fountainShowScheduler.empty():
+        cycleDurationMs_start = supervisor.ticks_ms()
+
+        while not fountainShowScheduler.empty():                
+                
                 fountainHTTPServer.poll()
 
                 #IH240219 simple heartbeat 
-                if heartBeadCounter<20:
+                if heartBeadCounter<20:  # FAST  heartbeat means: loop active, show running
                         heartBeadCounter+=1
                 else:
                         fountainDeviceCollection.getDeviceFromNativeFormatID(FountainDeviceCollection.LED1).pwm_setConstant(FountainDeviceCollection.LED1,
@@ -87,6 +91,8 @@ def runShow(showSchedule=FountainShowScheduler.TestSchedule()):
                                 if fountainDeviceCollection.getDeviceFromNativeFormatID(FountainDeviceCollection.LED1).getState("percentageValue")==0
                                 else 0)
                         heartBeadCounter=0
+                        fountainApp["recentCycleDurationMs"] = supervisor.ticks_ms() - cycleDurationMs_start
+                cycleDurationMs_start = supervisor.ticks_ms()
                 
                 if FountainHTTPServer.commandFromWebClient in [ 
                                 FountainHTTPServer.SHOW_STOP, 
@@ -102,6 +108,7 @@ def runShow(showSchedule=FountainShowScheduler.TestSchedule()):
                 fountainDeviceStatusVisualizer.showStatusAll()
                                        
                 time.sleep(timeResolutionMilliseconds/1000)  #IH240108 heuristic 
+                                                             # IH240221 currently set to 0
 
 
         fountainShowScheduler.runCleanup()
@@ -116,12 +123,13 @@ def runShow(showSchedule=FountainShowScheduler.TestSchedule()):
 loopEnabled = True
 fountainApp['currentScheduleNative']=FountainShowScheduler.TestSchedule()
 heartBeadCounter=0
+cycleDurationMs_start = supervisor.ticks_ms()
 while True:
     try:
         fountainHTTPServer.poll()
 
         #IH240219 simple heartbeat 
-        if heartBeadCounter<150:
+        if heartBeadCounter<300:    # SLOW  heartbeat means: loop active, show not running
                 heartBeadCounter+=1
         else:
                 fountainDeviceCollection.getDeviceFromNativeFormatID(FountainDeviceCollection.LED1).pwm_setConstant(FountainDeviceCollection.LED1,
@@ -129,6 +137,8 @@ while True:
                         if fountainDeviceCollection.getDeviceFromNativeFormatID(FountainDeviceCollection.LED1).getState("percentageValue")==0
                                 else 0)
                 heartBeadCounter=0
+                fountainApp["recentCycleDurationMs"] = supervisor.ticks_ms() - cycleDurationMs_start
+        cycleDurationMs_start = supervisor.ticks_ms()
 
 
         if FountainHTTPServer.commandFromWebClient in [FountainHTTPServer.LED1_ON]:
@@ -177,7 +187,9 @@ while True:
                                   
         fountainDeviceStatusVisualizer.showStatusAll()                                  
 
-        time.sleep(timeResolutionMilliseconds/1000)  #IH240108 heuristic
+        time.sleep(timeResolutionMilliseconds/1000)  #IH240108 heuristic, 
+                                                     # IH240221 currently set to 0
+
      
     except Exception as e:
         debugPrint(1,e)

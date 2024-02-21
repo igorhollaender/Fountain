@@ -1,9 +1,10 @@
 #
 #    F o u n t a i n   D e v i c e   S t a t u s   V i s u a l i z e r . p y 
 #
-#    Last revision: IH240219
+#    Last revision: IH240221
 
 import time
+import supervisor
 from boardResources import FountainDeviceCollection
 from FountainApplicationData import fountainApp, timeToHMS
 
@@ -31,7 +32,8 @@ class FountainDeviceStatusVisualizer():
         self.printBuffer = ""
 
     def showStatusAll(self) -> None:
-        self.visualizerPrint(f'Time T+{timeToHMS(time.time()-fountainApp["timeAtStart"])}, {fountainApp["currentStatusString"]}')
+        self.visualizerPrint(f'Time T+{timeToHMS(time.time()-fountainApp["timeAtStart"])}, {fountainApp["currentStatusString"]} ')
+        self.visualizerPrint(f'Cycle duration [ms]: {fountainApp["recentCycleDurationMs"]}') # IH240221 PROBLEM HERE this corrupts the visualizer buffering 
         for device in fountainApp["fountainDeviceCollection"].deviceList:
             if device.getNativeFormatID() in [FountainDeviceCollection.LED1]: #IH240219 LED1 (board LED) temporarily used for heartBeat
                 self.visualizerPrint (f'{device.getSimpleFormatID()}: not monitored')        
