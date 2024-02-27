@@ -1,7 +1,7 @@
 #
 #    f o u n t a i n   H T T P   S e r v e r . p y 
 #
-#    Last revision: IH240221
+#    Last revision: IH240227
 #
 #
 #   based on 
@@ -93,7 +93,7 @@ class FountainHTTPServer():
         self.server.add_routes([
                 Route("/",GET, FountainHTTPServer.base),
                 Route("/",POST, FountainHTTPServer.buttonpress),
-                Route("/",GET, FountainHTTPServer.connect_client),
+                Route("/connect-websocket",GET, FountainHTTPServer.connect_client),
         ])
         
 
@@ -306,6 +306,8 @@ class FountainHTTPServer():
             let ws = new WebSocket('ws://' + location.host + '/connect-websocket');
             ws.onopen = () => console.log('WebSocket connection opened');
             ws.onclose = () => console.log('WebSocket connection closed');
+            ws.onmessage = () => console.log('MESSAGE COMES');
+            ws.onerror = () => console.log('ERROR OCCURED');
         </script>
         <title>Fountain HTTP Server</title>
         <h1>Fountain HTTP Server Ver.{version}</h1>

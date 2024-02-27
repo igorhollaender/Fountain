@@ -4,7 +4,7 @@
 #
 #     The Fountain project
 #    
-#     Last revision: IH240221
+#     Last revision: IH240227
 #
 #
 
@@ -27,8 +27,8 @@ from FountainApplicationData import fountainApp, debugPrint, timeToHMS
 from FountainDeviceStatusVisualizer import FountainDeviceStatusVisualizer
 
 
-fountainApp["version"]                  = "240221a"
-fountainApp["verboseLevel"]             = 1 
+fountainApp["version"]                  = "240227a"
+fountainApp["verboseLevel"]             = 1
 fountainApp["simulated"]                = True
 
 fountainDeviceCollection = FountainDeviceCollection()
@@ -44,7 +44,7 @@ gateway =  ipaddress.IPv4Address("192.168.0.1")       #IH231211 works in BA, W, 
 
 
 debugPrint(1,f"Verbose level {fountainApp["verboseLevel"]}")
-fountainDeviceStatusVisualizer = FountainDeviceStatusVisualizer(1)
+fountainDeviceStatusVisualizer = FountainDeviceStatusVisualizer(0)  # 1 is default
     
 fountainHTTPServer = FountainHTTPServer(
         os.getenv('CIRCUITPY_WIFI_SSID'),
@@ -73,11 +73,14 @@ fountainApp["websocket"] = None
 showRunning=False
 
 async def handle_http_requests():
+        print ("I am here HTTP REQUESTS")
         while showRunning:
                 fountainHTTPServer.poll()
+                print ("I am here E")
                 await async_sleep(0)
 
 async def handle_websocket_requests():
+        print ("I am here WEBSOCKET REQUESTS")
         while showRunning:
                 if fountainApp["websocket"] is not None:
                         # IH240221 TODO
@@ -85,7 +88,9 @@ async def handle_websocket_requests():
                 await async_sleep(0)
 
 async def handle_websocket_messages():
+        print ("I am here WEBSOCKET MESSAGES")
         while showRunning:
+                print ("I am here C")
                 if fountainApp["websocket"] is not None:                
                         # IH240221 TODO
                         fountainHTTPServer.fountainApp["websocket"] .send_message("LALALA",fail_silently=True)
@@ -93,6 +98,7 @@ async def handle_websocket_messages():
                 await async_sleep(0)
 
 async def handle_show_scheduler_events(scheduler,showSchedule):
+        print ("I am here SCHEDULER EVENTS")
         heartBeadCounter=0
         cycleDurationMs_start = supervisor.ticks_ms()
         global showRunning
@@ -135,7 +141,7 @@ async def runShow_async_work(scheduler,showSchedule):
                 create_task(handle_show_scheduler_events(scheduler,showSchedule)),       
                 )
         
-async def runShow_async(showSchedule=FountainShowScheduler.TestSchedule()):
+def runShow_async(showSchedule=FountainShowScheduler.TestSchedule()):
         debugPrint (2,f'SHOW started at T+{timeToHMS(time.time()-fountainApp["timeAtStart"])}')
         fountainApp["currentStatusString"] = "Show running"
         fountainShowScheduler  = FountainShowScheduler(
@@ -258,7 +264,11 @@ while True:
                 nextScheduledTime = time.time() + 10  #IH240124 TODO the time daly between shows to be set from HTTP server 
                 debugPrint(2,f'fountainGlobalScheduler: next show scheduled to T+{timeToHMS(nextScheduledTime-fountainApp["timeAtStart"])} (current time is T+{timeToHMS(time.time()-fountainApp["timeAtStart"])})')
                 # print(f'current NTP time is {fountainHTTPServer.getNTPdatetime()}') #IH240111 does not work due to disabled port 123
-                fountainGlobalScheduler.enterabs(nextScheduledTime,1,runShow,kwargs={'showSchedule':fountainApp['currentScheduleNative']})
+                
+                # IH240227 testing websocket
+                # fountainGlobalScheduler.enterabs(nextScheduledTime,1,runShow,kwargs={'showSchedule':fountainApp['currentScheduleNative']})
+                fountainGlobalScheduler.enterabs(nextScheduledTime,1,runShow_async,kwargs={'showSchedule':fountainApp['currentScheduleNative']})
+
                 # runShow may leave a commandFromWebClient pending
                 #IH240124 HACK 
                 if FountainHTTPServer.commandFromWebClient in [FountainHTTPServer.SHOW_STOP]:
