@@ -1,14 +1,14 @@
 
 #
-#     m a i n _ w a t e r l e v e l . p y 
+#     m a i n _  f o u n t a i n . p y 
 #
-#     The Waterlevel Sensor project
+#     The Fountain project
 #    
 #     Last revision: IH250303
 #
 #
-#     To activate the waterlevel system, 
-#     copy this file to     m a i n . p y     
+#     To activate the fountain system, 
+#     rename this file to     m a i n . p y     
 
 
 import ipaddress
@@ -16,20 +16,25 @@ import os
 import sched
 import time
 import supervisor
+#  import adafruit_ntp   #IH240122 this is abandoned since it would require opening the 123 port
 from adafruit_httpserver import Request, Response
 from asyncio import create_task, gather, run, sleep as async_sleep
 
 
-from WaterlevelHTTPServer import WaterlevelHTTPServer
-from boardResources import boardLED, timeResolutionMilliseconds
-from WaterlevelApplicationData import waterlevelApp, debugPrint, timeToHMS
-from WaterlevelDeviceStatusVisualizer import WaterlevelDeviceStatusVisualizer
+from FountainHTTPServer import FountainHTTPServer
+from FountainShowScheduler import FountainShowScheduler
+from FountainSimulatedRTC import FountainSimulatedRTC
+from boardResources import boardLED, FountainDeviceCollection, timeResolutionMilliseconds
+from FountainApplicationData import fountainApp, debugPrint, timeToHMS
+from FountainDeviceStatusVisualizer import FountainDeviceStatusVisualizer
 
 
-waterlevelApp["version"]                  = "250303a"
-waterlevelApp["verboseLevel"]             = 1
-waterlevelApp["simulated"]                = True
+fountainApp["version"]                  = "250303a"
+fountainApp["verboseLevel"]             = 1
+fountainApp["simulated"]                = True
 
+fountainDeviceCollection = FountainDeviceCollection()
+fountainApp["fountainDeviceCollection"] = fountainDeviceCollection
 
 # ipv4    =  ipaddress.IPv4Address("192.168.0.110")     #IH231211 "192.168.0.110" works in BA
 ipv4    =  ipaddress.IPv4Address("192.168.0.195")     #IH231219 "192.168.0.195" works in W
@@ -40,37 +45,46 @@ gateway =  ipaddress.IPv4Address("192.168.0.1")       #IH231211 works in BA, W, 
 
 
 
-debugPrint(1,f"Verbose level {waterlevelApp["verboseLevel"]}")
-waterlevelDeviceStatusVisualizer = WaterlevelDeviceStatusVisualizer(1)  # 1 is default
+debugPrint(1,f"Verbose level {fountainApp["verboseLevel"]}")
+fountainDeviceStatusVisualizer = FountainDeviceStatusVisualizer(1)  # 1 is default
     
-waterlevelHTTPServer = WaterlevelHTTPServer(
+fountainHTTPServer = FountainHTTPServer(
         os.getenv('CIRCUITPY_WIFI_SSID'),
         os.getenv('CIRCUITPY_WIFI_PASSWORD'),
         ipv4,
         netmask,
         gateway,
-        waterlevelApp['version'],
-        debug=(True if waterlevelApp["verboseLevel"]>1 else False))
+        fountainApp['version'],
+        debug=(True if fountainApp["verboseLevel"]>1 else False))
+
+# IH240122 PROBLEM HERE this does not work 
+# fountainSimulatedRTC = FountainSimulatedRTC(
+#          os.getenv('CIRCUITPY_WIFI_SSID'),
+#          os.getenv('CIRCUITPY_WIFI_PASSWORD'),
+#          debug=True)
 
 
 
-waterlevelHTTPServer.Start()
-waterlevelApp["timeAtStart"] = time.time()
-waterlevelApp["websocket"] = None
+fountainGlobalScheduler = sched.scheduler(timefunc=time.time)
+fountainHTTPServer.Start()
+fountainApp["timeAtStart"] = time.time()
+fountainApp["currentStatusString"] = "Idle"
+fountainApp["currentShowScheduler"] = None
+fountainApp["websocket"] = None
 
 showRunning=False
 
 async def handle_http_requests():
         print ("I am here HTTP REQUESTS")
         while showRunning:
-                waterlevelHTTPServer.poll()
+                fountainHTTPServer.poll()
                 print ("I am here E")
                 await async_sleep(0)
 
 async def handle_websocket_requests():
         print ("I am here WEBSOCKET REQUESTS")
         while showRunning:
-                if waterlevelApp["websocket"] is not None:
+                if fountainApp["websocket"] is not None:
                         # IH240221 TODO
                         pass
                 await async_sleep(0)
@@ -79,9 +93,9 @@ async def handle_websocket_messages():
         print ("I am here WEBSOCKET MESSAGES")
         while showRunning:
                 print ("I am here C")
-                if waterlevelApp["websocket"] is not None:                
+                if fountainApp["websocket"] is not None:                
                         # IH240221 TODO
-                        waterlevelHTTPServer.waterlevelApp["websocket"] .send_message("LALALA",fail_silently=True)
+                        fountainHTTPServer.fountainApp["websocket"] .send_message("LALALA",fail_silently=True)
                         pass
                 await async_sleep(0)
 
